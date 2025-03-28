@@ -1,4 +1,4 @@
-version = "0.1.0";
+version = "0.1.1";
 setBatchMode(true);
 
 //test = false;
@@ -29,11 +29,15 @@ function dialog_window(folder){
 		+"<center><b>Kymolyzer, version "+ version + "</b></center>"
 		+"<center><i>source:" + GitHub_kymolyzer + "</i></center>"
 		+"<br>"
+		+"<i> This macro requires that ROIs are already defined and named a certain way that corresponds to guidelines in (1). "
+		+"It is strongly recommended that the provided 'Correct and project' macro is used to prepare the images first, "
+		+"followed by the 'ROI_prep' macro to make the actual ROIs.</i><br>"
+		+"<br>"
 		+"<b>Create kymograms</b><br>"
 		+"Press to create kymograms from defined ROIs. Error is displayed if no ROIs are defined.<br>"
 		+"<br>"
 		+"<b>Check kymograms</b><br>"
-		+"Images in the folder are displayed one-by-one, together with kymograms for each cell (defined ROI). <br>"
+		+"Images in the folder are displayed one-by-one, together with kymograms for each cell (defined ROI).<br>"
 		+"<br>"
 		+"<b>Analyze kymograms</b><br>"
 		+"Kymograms are quantified. Results are saved in a csv file that can be further processed using <i>R scripts</i> published previously (1, 2).<br>"
@@ -58,12 +62,12 @@ function dialog_window(folder){
 function processFolder(dir, processing_function){
     list = getFileList(dir);
     for (i = 0; i < list.length; i++){
-        if (endsWith(list[i], "/")) { 
+        if (endsWith(list[i], "/")){ 
             processFolder("" + dir + list[i], processing_function); // Recursively process subfolders
         } else {
             file = dir + list[i];
-//            if (endsWith(dir, image_type + "/data/") && indexOf(file, subset) >= 0) {
-            if (endsWith(dir, "/data/") && indexOf(file, subset) >= 0)  {
+//            if (endsWith(dir, image_type + "/data/") && indexOf(file, subset) >= 0){
+            if (endsWith(dir, "/data/") && indexOf(file, subset) >= 0){
                 extIndex = lastIndexOf(file, ".");
 	            ext = substring(file, extIndex+1);
 	            if (contains(extension_list, ext)) {
@@ -97,14 +101,12 @@ function prepare(){
 	if (!File.exists(roiDir))
 		exit("Create ROIs before running this macro again, or double-check the data structure if you have defined ROIs previously.");
 	kymoDir = File.getParent(dir) + "/" + replace(File.getName(dir), "data", "kymograms") + "/";
-	if (!File.exists(kymoDir))
-		File.makeDirectory(kymoDir);
 	kymoDirImage = kymoDir + title  + "/";
-	if (!File.exists(kymoDirImage))
-		File.makeDirectory(kymoDirImage);
 	kymoDirImageScaled = kymoDirImage + "scaled/";
-	if (!File.exists(kymoDirImageScaled))
-		File.makeDirectory(kymoDirImageScaled);
+	dirList = newArray(kymoDir, kymoDirImage, kymoDirImageScaled);
+	for (i = 0; i < dirList.length; i++)
+		if (!File.exists(dirList[i]))
+			File.makeDirectory(dirList[i]);
 	roiManager("reset");
 	roiManager("Open", roiDir + title + "-RoiSet.zip");
 	roiManager("Show All with labels");
@@ -112,12 +114,15 @@ function prepare(){
 }
 
 function create_kymograms(){
+// TODO - some renaming magic will need to take place here
+// otherwise the ROI handling will be cumbersome and require the user to rename things
+// maybe search for SUM/MAX/AVG in ROISet names and remove them?
 	prepare();
 	numROIs = roiManager("count");
-	init = 0;
+	last = numROIs;
 	if (test == true)
-		init = numROIs - 4;
-	for(j = init; j < numROIs; j++) {
+		last = 5;
+	for (j = 0; j < last; j++) {
 		selectWindow(title);	
 		roiManager("Select", j);
 		run("Area to Line");
@@ -144,32 +149,34 @@ function display_kymograms(){
 	next_image = false;
 	scaled = false;
 	
-	path = kymoDirImage;
-	kymoList = getFileList(path);
+	kymoPath = kymoDirImage;
+	kymoList = getFiles(kymoPath);
+	kymo_count = kymoList.length;
 
 	while (next_image == false){
 		Dialog.createNonBlocking("Select ROIs for display:");
-			Dialog.addNumber("From:", 1);
-			Dialog.addToSameRow();
-			Dialog.addNumber("To:", kymoList.length);
+			Dialog.addString("Kymograms to display:", 1 + "-" + kymo_count);
 			Dialog.addCheckbox("Scaled:", false);
 			Dialog.addCheckbox("Go to next image:", false);
 			Dialog.show();
-			first = Dialog.getNumber() - 1;
-			last = Dialog.getNumber();
+			kymograms = Dialog.getString();
 			scaled = Dialog.getCheckbox();
 			next_image = Dialog.getCheckbox();
 			
+		kymogram_IDs = sort_IDs(kymograms);
 		close("ROI*");
-		
-		path = kymoDirImage;
-		if (scaled == true)
-			path = kymoDirImageScaled;
-		kymoList = getFileList(path);
-		
-		for (j = first; j < last; j++)
-			if (!endsWith(kymoList[j], "/"))
-				open(path + kymoList[j]);
+	
+		kymoPath = kymoDirImage;
+		if (scaled == true){
+			kymoPath = kymoDirImageScaled;
+			for (j = 0; j < kymogram_IDs.length; j++)
+				kymogram_IDs[j] = kymogram_IDs[j]*2;
+		}
+		kymoList = getFiles(kymoPath);
+		for (j = 0; j < kymogram_IDs.length; j++){
+			k = kymogram_IDs[j]-1;
+			open(kymoPath + kymoList[k]);
+		}
 		run("Tile");		
 	}
 	close("*");
@@ -177,7 +184,7 @@ function display_kymograms(){
 
 function analyze_kymograms(){
 	run("Flip Horizontally", "stack");
-
+	
 }
 
 function contains(array, value){
@@ -185,4 +192,40 @@ function contains(array, value){
         if (array[i] == value)
         	return true;
     return false;
+}
+
+function getFiles(path){
+	list = getFileList(path);
+	for (i = list.length-1 ; i >= 0 ; i--){
+		if (endsWith(list[i], "/"))
+			list = Array.deleteIndex(list, i);
+	}
+	return list;
+}
+
+function sort_IDs(string){
+	// if a range is defined, use the lower number as the beginning and the higher as end value; create an array containing these and all integer numbers between them
+	string = replace(string, " ", "");
+	array = split(string,",,");
+	array_temp = newArray(0);
+	for (i = array.length-1; i >= 0; i--){
+		if (indexOf(array[i], "-") >= 0){
+			string_temp = split(array[i],"--");
+			string_temp = Array.sort(string_temp);
+			for (k = string_temp[0]; k <= string_temp[1]; k++){
+				array_temp = Array.concat(array_temp, k);
+			}
+			array = Array.deleteIndex(array, i);
+		}
+	}
+	array = Array.concat(array, array_temp);
+	for (i = 0; i < array.length; i++){
+		array[i] = parseInt(array[i]);
+	}
+	array = Array.sort(array);
+	for (i = array.length-2; i >= 0; i--){
+		if (array[i] == array[i+1])
+			array = Array.deleteIndex(array, i);
+	}
+	return array;
 }

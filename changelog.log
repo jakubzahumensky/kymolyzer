@@ -1,0 +1,30 @@
+26. 3. 2024
+
+I started to write the code in python in Fiji environment, so that I could use modules and the overall python logic and syntax, and keep the overall structure more clean and transparent. Unfortunatelly, this proved cumbersome and would require rewriting a lot of existing code. So I decided to use Fiji macro instead. This has the advantage that I can use lots of functions and code that I have written previously.
+
+
+27. 3. 2025
+
+Started writing the actual code
+
+General structure in place:
+- there are three options for the user to chose from: create, display and analyze kymograms; after each is finished, the initial dialog will be displayed again, until the user selects "EXIT". Short help message is included.
+- macro will presuppose that ROIs are already defined AND that the data structure is exactly the same as for the published "microscopy analysis" macros. I thought I might add this functionality to this macro as a module or a script to be loaded from a spearate file, but was unable to make it work.
+
+It is recommended that users first run the "correct and project" macro, define the ROIs from SUM/MAX intensity projections and then use them with the corrected images.
+- TODO: some renaming magic will need to take place here, otherwise the ROI handling will be cumbersome and require the user to rename things. Maybe search for SUM/MAX/AVG in ROISet names and remove them?
+
+I wanted to redo the processing logic behind the recursive processing of files to avoid evaluating if/else for each file separately, so I wanted to first select what should be done (create, display, analyze) - only once, then go through all the files. Apparently, this can't be done in Fiji macro language without repeating the whole processFolder function in each individual process function.
+
+'Create kymograms'
+From each ROI a kymogram is created and scaled to stretch it in the 'y' dimension for better display. Kymographs scaled without interpolation and using 'bilinear' interpolation are saved for each ROI. The scaled kymograms have a separate folder inside the folder with kymograms.
+
+'Display jymograms'
+Added function for displaying kymograms after they are made (they are not made correctly at this stage), asks user to specify ROIs for which they want to display kymograms. This is useful for larger images with lots of ROIs. Currently, user can specify a range, not a comma-delimited list. I have developed a function to handle such input before, for Quantify macro, so I might implement it here as well.
+
+28. 3. 2025
+'Display kymograms'
+- tweaked to only count files, not folders (there is a 'scaled/' folder in each folder with kymograms).
+- updated how input is handled based on sort_channels() function from 'Quantify' macro; this is an updated version that can handle a mixture of ranges and individual numbers, sorts them in ascending order and removes duplicates, if present.
+- In the current version, the "scaled" option shows only kymograms scaled without interpolation.
+
