@@ -1,31 +1,48 @@
-process_choices = newArray("Define ROIs", "Check ROIs", "Create kymograms", "Check kymograms", "Analyze kymograms", "exit");
+version = "0.1.0";
+
+process_choices = newArray("Define ROIs", "Check ROIs", "Create kymograms", "Check kymograms", "Analyze kymograms", "EXIT");
 path = getDirectory("current");
-eval("script", File.openAsString(path + "functions.ijm"));
+publication = "Zahumensky & Malinsky, 2004; doi: 10.1093/biomethods/bpae075"
+GitHub_microscopy_analysis = "https://github.com/jakubzahumensky/microscopy_analysis"
+GitHub_kymolyzer = "https://github.com/jakubzahumensky/kymolyzer"
 
-
-function dialog_window(){
+function dialog_window(folder){
 	help_message = "<html>"
-		+"<b>Directory</b><br>"
-		+"Specify the directory where you want <i>Fiji</i> to start looking for folders with images. "
-		+"The macro works <u>recursively</u>, i.e., it looks into all subfolders. All folders with names <u>ending</u> with the word \"<i>data</i>\" are processed."
-		+"All other folders are ignored.<br>"
+		+"<center><b>Kymolyzer, version "+ version + "</b></center>"
+		+"<center><i>source:" + GitHub_kymolyzer + "</i></center>"
 		+"<br>"
-		+"<b>Subset</b> <i>(optional)</i><br>"
-		+"If used, only images with filenames containing the specified <i>string</i> (i.e., group of characters and/or numbers) will be processed. "
-		+"This option can be used to selectively process images of a specific strain, condition, etc. "
-		+"Leave empty to process all images in specified directory (and its subdirectories).<br>"
-		+"<br>";
-//	Dialog.create("Whatcha doin'?");
+		+"<b>Define ROIs & Check ROIs</b><br>"
+		+"User is referred to the <i>ROI_prep</i> macros published previously (1, 2).<br>"
+		+"<br>"
+		+"<b>Create kymograms</b><br>"
+		+"Press to create kymograms from defined ROIs. Error is displayed if no ROIs are defined.<br>"
+		+"<br>"
+		+"<b>Check kymograms</b><br>"
+		+"Images in the folder are displayed one-by-one, together with kymograms for each cell (defined ROI). <br>"
+		+"<br>"
+		+"<b>Analyze kymograms</b><br>"
+		+"Kymograms are quantified. Results are saved in a csv file that can be further processed using <i>R scripts</i> published previously (1, 2).<br>"
+		+"<br>"
+		+"<b>References:</b><br>"
+		+"(1) " + publication + "<br>"
+		+"(2) " + GitHub_microscopy_analysis + "<br>"
+		;
 	Dialog.createNonBlocking("Kymolyzer");
+		Dialog.addDirectory("Directory:", folder);
 		Dialog.addChoice("Select an operation:", process_choices);
 		Dialog.addHelp(help_message);
 		Dialog.show();
+		dir = replace(Dialog.getString(), "\\", "/");
 		process = Dialog.getChoice();
 	
+	message_for_check = "Please use the 'ROI_prep' macro and select: \n"
+			+ "- 'Convert Masks to ROIs' if you have segmentation masks \n";
+	message_for_define = message_for_check + "- 'Check and adjust ROIs' if you want to create them manually";
+	
 	if (matches(process, process_choices[0]))
-		define_ROIs();
+		waitForUser(message_for_define);
 	else if (matches(process, process_choices[1]))
-		check_ROIs();
+		waitForUser(message_for_check);
 	else if (matches(process, process_choices[2]))
 		create_kymograms();
 	else if (matches(process, process_choices[3]))
@@ -33,19 +50,8 @@ function dialog_window(){
 	else if (matches(process, process_choices[4]))
 		analyze_kymograms();
 	else
-		exit("See ya");
-	dialog_window();
-}
-
-function define_ROIs(){
-	run("Grays");
-	run("Enhance Contrast...", "saturated=0.35");
-//	run("Macro...", "path=/Kymolyzer/functions.ijm");
-	hello();
-}
-
-function check_ROIs(){
-	run("Flip Horizontally", "stack");
+		exit("See ya.");
+	dialog_window(dir);
 }
 
 function create_kymograms(){
@@ -60,4 +66,5 @@ function analyze_kymograms(){
 	run("Sharpen", "stack");
 }
 
-dialog_window();
+initial_folder = ""
+dialog_window(initial_folder);
