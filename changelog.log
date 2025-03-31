@@ -28,3 +28,15 @@ Added function for displaying kymograms after they are made (they are not made c
 - updated how input is handled based on sort_channels() function from 'Quantify' macro; this is an updated version that can handle a mixture of ranges and individual numbers, sorts them in ascending order and removes duplicates, if present.
 - In the current version, the "scaled" option shows only kymograms scaled without interpolation.
 
+
+31. 3. 2025
+'initial dialog window'
+- position set so that it is in to top right corener of the screen, just below the Fiji app
+
+'Display kymograms'
+- fix behaviour for "out of bounds input" -> selected ROIs are converted to first (for input below 1) or last (for input too high) ROI
+- reworked the selection of "next image" display. Now it contains options to: display previous, current, next, and also directly choose from the list of file in the current directory. This required quite a bit of gymnastics and changing how some loops and functions work.
+- Upon opening an image, no ROIs are first shown and user is asked to decide which to display. Same when going to the next image.
+- window positioning - images are opened in the top left corner, the dialog window in the bottom right, so that it does not get in the way of open kymograms
+- in the dialog window, the name of current image, and also file counter (x/y) is shown
+

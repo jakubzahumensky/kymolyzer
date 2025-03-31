@@ -132,7 +132,6 @@ function create_kymograms(){
 			run("Enhance Contrast", "saturated=0.01");
 		}
 		saveAs("TIFF", kymoDirImage + "ROI_" + j + 1);
-//		close();
 		rename("kymo");
 		for (k = 0; k < 2; k++) {
 			run("Scale...", "x=1.0 y=5 z=1.0 depth=2 interpolation=" + interpolation[k] + " average create");
@@ -152,18 +151,21 @@ function display_kymograms(){
 	kymoPath = kymoDirImage;
 	kymoList = getFiles(kymoPath);
 	kymo_count = kymoList.length;
+	list_plus = Array.concat("previous image", "this image", "next image", list);
 
 	while (next_image == false){
 		Dialog.createNonBlocking("Select ROIs for display:");
 			Dialog.addString("Kymograms to display:", 1 + "-" + kymo_count);
 			Dialog.addCheckbox("Scaled:", false);
 			Dialog.addCheckbox("Go to next image:", false);
+			Dialog.addChoice("Display next:", list_plus, "this image");
 			Dialog.show();
 			kymograms = Dialog.getString();
 			scaled = Dialog.getCheckbox();
 			next_image = Dialog.getCheckbox();
+			display_next = Dialog.addChoice();
 			
-		kymogram_IDs = sort_IDs(kymograms);
+		kymogram_IDs = sort_IDs(kymograms, kymoList.length);
 		close("ROI*");
 	
 		kymoPath = kymoDirImage;
@@ -203,7 +205,7 @@ function getFiles(path){
 	return list;
 }
 
-function sort_IDs(string){
+function sort_IDs(string, integer){
 	// if a range is defined, use the lower number as the beginning and the higher as end value; create an array containing these and all integer numbers between them
 	string = replace(string, " ", "");
 	array = split(string,",,");
@@ -218,14 +220,24 @@ function sort_IDs(string){
 			array = Array.deleteIndex(array, i);
 		}
 	}
+	// concatenate arrays and turn all items into integers (one of the things above creates strings)
+	// substitute out of bounds values with nearest valid input (safety measure to avoid errors and macro crash)
 	array = Array.concat(array, array_temp);
 	for (i = 0; i < array.length; i++){
 		array[i] = parseInt(array[i]);
+		if (array[i] > kymoList.length)
+			array[i] = kymoList.length;
+		if (array[i] < 1)
+			array[i] = 1;
 	}
-	array = Array.sort(array);
-	for (i = array.length-2; i >= 0; i--){
-		if (array[i] == array[i+1])
-			array = Array.deleteIndex(array, i);
+	// sort array in ascending order and remove duplicates from the list of ROIs to be display to avoid displaying same ROI multiple times
+	// used algorithm for removal of duplicates requires a sorted array
+	array = Array.sort(array); 
+	if (array.length > 1){
+		for (i = array.length-2; i >= 0; i--){
+			if (array[i] == array[i+1])
+				array = Array.deleteIndex(array, i);
+		}
 	}
 	return array;
 }

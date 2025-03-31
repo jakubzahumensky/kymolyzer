@@ -1,6 +1,13 @@
-- update help message
+'create kymograms'
 - fix create_kymograms so that the channels are handled correctly
-- define quantification options and incorporated them
 - figure out a way how to work with ROISets that include SUM/AVG/MEAN in the name - rename or use some wildcard?
-- figure out how to handel tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
-- 
+- figure out how to handle tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
+
+'display kymograms'
+- fix image size handling, so that it does not get too small when run("Tile") is applied mutliple times (it gets smaller each time)
+
+'analyze kymopgrams'
+- define quantification options and incorporated them
+
+general
+- update help messages
