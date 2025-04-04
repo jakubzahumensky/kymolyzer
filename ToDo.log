@@ -1,13 +1,15 @@
 'create kymograms'
-- fix create_kymograms so that the channels are handled correctly
+- fix create_kymograms so that the channels are handled correctly - ask user to select channels?
 - figure out a way how to work with ROISets that include SUM/AVG/MEAN in the name - rename or use some wildcard?
+	-> ROISet file handling will need to be sorted out, perhaps rename them to correcpond to the original image name, i.e., without -SUM, -MAX, -AVG, -processed, -corr; this requires updating of the other macros as well!!!
 - figure out how to handle tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
 
 'display kymograms'
 - fix image size handling, so that it does not get too small when run("Tile") is applied mutliple times (it gets smaller each time)
 
-'analyze kymopgrams'
+'analyze kymograms'
 - define quantification options and incorporated them
 
 general
 - update help messages
+- initial window LUT selection - used images can have fewer or more than 2 channels; other channels than 1 and 2 might be used for kymogram creation. This needs to be fixed - some older version asked the user what was what

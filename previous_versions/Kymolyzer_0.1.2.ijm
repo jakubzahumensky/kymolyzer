@@ -5,7 +5,9 @@ setBatchMode(true);
 test = true;
 if (test == true)
 	setBatchMode(false);
-	
+
+close("*");
+
 process_choices = newArray("Create kymograms", "Display kymograms", "Analyze kymograms", "EXIT");
 interpolation = newArray("None","Bilinear");
 // only files with these extensions will be processed
@@ -83,9 +85,10 @@ function processFolder(dir, processing_function){
 }
 
 function selectProcessingFunction(process, i){
-    if (matches(process, process_choices[0]))
+    if (matches(process, process_choices[0])){
+    	setBatchMode(true);
 		i = create_kymograms(i);
-	else if (matches(process, process_choices[1])){
+    } else if (matches(process, process_choices[1])){
 		setBatchMode(false);
 		i = display_kymograms(i);
 	}
@@ -98,7 +101,7 @@ function selectProcessingFunction(process, i){
 
 function prepare(){
 	open(file);
-	setLocation(0, 0);
+	setLocation(0, 0, screenWidth/3, screenWidth/3);
 	title = File.nameWithoutExtension;
 	rename(title);
 	roiDir = File.getParent(dir) + "/" + replace(File.getName(dir), "data", "ROIs") + "/";
@@ -125,7 +128,7 @@ function create_kymograms(l){
 	numROIs = roiManager("count");
 	last = numROIs;
 	if (test == true)
-		last = 5;
+		last = 20;
 	for (j = 0; j < last; j++) {
 		selectWindow(title);	
 		roiManager("Select", j);
@@ -150,26 +153,29 @@ function create_kymograms(l){
 
 function display_kymograms(k){
 	prepare();
-
+	this_img = "> this image< ";
+	next_img = "-> next image";
+	prev_img = "<- previous image";
+	
 	kymoPath = kymoDirImage;
 	kymoList = getFiles(kymoPath);
 	kymo_count = kymoList.length;
-	list_plus = Array.concat("previous image", "this image", "next image", list);
-	display_next = "this image";
-	while (display_next == "this image"){
+	list_plus = Array.concat(this_img, next_img, prev_img, list);
+	display_next = this_img;
+	while (display_next == this_img){
 		Dialog.createNonBlocking("Select ROIs for display:");
 			Dialog.addString("Kymograms to display:", 1 + "-" + kymo_count);
 			Dialog.addChoice("Display", newArray("regular","scaled"));
 			Dialog.addMessage("current image: " + list[k]);
 			Dialog.addMessage("Image:" + k+1 + "/" + list.length);
-			Dialog.addChoice("Display next:", list_plus, "this image");
+			Dialog.addChoice("Display next:", list_plus, this_img);
 			Dialog.setLocation(screenWidth*2.07/3, screenHeight*6.7/9);
 			Dialog.show();
 			kymograms = Dialog.getString();
 			display_type = Dialog.getChoice();
 			display_next = Dialog.getChoice();		
 	
-		if (display_next != "this image")
+		if (display_next != this_img)
 			break;
 		
 		kymogram_IDs = sort_IDs(kymograms, kymoList.length);
@@ -182,22 +188,31 @@ function display_kymograms(k){
 				kymogram_IDs[j] = kymogram_IDs[j]*2;
 		}
 		kymoList = getFiles(kymoPath);
+		offsetX = screenWidth/3;
+		offsetY = screenHeight/9;
 		for (j = 0; j < kymogram_IDs.length; j++){
 			l = kymogram_IDs[j]-1;
 			open(kymoPath + kymoList[l]);
+			setLocation(offsetX, offsetY);
+			run("View 100%");
+			getLocationAndSize(x, y, width, height);
+			offsetX += width;
+			if (offsetX + width >= screenWidth){
+				offsetX = screenWidth/3;
+				offsetY += height;
+			}
 		}
-		run("Tile");
 	}
 	
 	close("*");
-	if (display_next == "previous image"){
+	if (display_next == prev_img){
 		if (k > 0){
 			k--;
 		} else {
-			display_next = "this image";
+			display_next = this_img;
 			waitForUser("This is the first image of the series, there is no previous image.");
 		}
-	} else if (display_next == "next image"){
+	} else if (display_next == next_img){
 		k++;
 		if (k >= list.length)
 			return k-1;
