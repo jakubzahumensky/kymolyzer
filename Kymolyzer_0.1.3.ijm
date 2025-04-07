@@ -186,44 +186,61 @@ function displayKymograms(k){
 	kymo_count = kymo_list.length;
 	list_plus = Array.concat(this_img, next_img, prev_img, list);
 	display_next = this_img;
+	excluded_string = findExcluded(kymo_path);
 	while (display_next == this_img){
 		Dialog.createNonBlocking("Select ROIs for display:");
-			Dialog.addMessage("current image (" + k+1 + "/" + list.length + "): " + list[k]);
+			Dialog.addMessage("Current image (" + k+1 + "/" + list.length + "): " + list[k]);
 			Dialog.addChoice("Display next:", list_plus, this_img);
 			Dialog.addString("Kymograms to display:", 1 + "-" + kymo_count);
 			Dialog.addChoice("Display", newArray("regular","scaled", "scaled-interpolated"));
-			Dialog.setLocation(screenWidth*2.07/3, screenHeight*6.7/9);
+			Dialog.addMessage("Currently excluded kymograms:" + excluded_string);
+			Dialog.addString("Exclude kymograms:", "");
+			Dialog.addString("Restore kymograms:", "");
+			Dialog.setLocation(screenWidth*2.07/3, screenHeight*6/9);
 			Dialog.show();
 			display_next = Dialog.getChoice();
-			kymograms = Dialog.getString();
+			kymogram_IDs = sortIDs(Dialog.getString());
 			display_type = Dialog.getChoice();
+			kymograms_to_exclude = sortIDs(Dialog.getString());
+			kymograms_to_include = sortIDs(Dialog.getString());
+			
 
 		if (display_next != this_img)
 			break;
-
-		kymogram_IDs = sortIDs(kymograms, kymo_list.length);
+		
+		if (kymograms_to_exclude.length > 0)
+			excludeKymograms(kymograms_to_exclude, "exclude");
+		if (kymograms_to_include.length > 0)
+			excludeKymograms(kymograms_to_include, "include");
+		excluded_string = findExcluded(kymo_dir_image);
+		excluded_array = sortIDs(excluded_string);
+		
 		kymo_path = kymo_dir_image;
 		suffix = ".tif";
 		if (display_type == "scaled"){
 			kymo_path = kymo_dir_image_scaled;
-			suffix = "-int_None.tif";
+			suffix = "-int_None" + suffix;
 		} else if (display_type == "scaled-interpolated"){
 			kymo_path = kymo_dir_image_scaled;
-			suffix = "-int_Bilinear.tif";
+			suffix = "-int_Bilinear" + suffix;
 		}
 	
 		close("ROI*");
 		offset_x = screenWidth/3;
 		offset_y = screenHeight/9;
+		Array.show(excluded_array);
 		for (j = 0; j < kymogram_IDs.length; j++){
-			open(kymo_path + "ROI_" + kymogram_IDs[j] + suffix);
-			setLocation(offset_x, offset_y);
-			run("View 100%");
-			getLocationAndSize(x, y, width, height);
-			offset_x += width;
-			if (offset_x + width >= screenWidth){
-				offset_x = screenWidth/3;
-				offset_y += height;
+			kymogram = kymo_path + "ROI_" + kymogram_IDs[j] + suffix;
+			if (!contains(excluded_array, kymogram_IDs[j])){
+				open(kymogram);
+				setLocation(offset_x, offset_y);
+				run("View 100%");
+				getLocationAndSize(x, y, width, height);
+				offset_x += width;
+				if (offset_x + width >= screenWidth){
+					offset_x = screenWidth/3;
+					offset_y += height;
+				}
 			}
 		}
 	}
@@ -288,7 +305,7 @@ function getFiles(path){
 	return list;
 }
 
-function sortIDs(string, integer){
+function sortIDs(string){
 	// if a range is defined, use the lower number as the beginning and the higher as end value; create an array containing these and all integer numbers between them
 	string = replace(string, " ", "");
 	array = split(string,",,");
@@ -371,4 +388,30 @@ function printArray(array){
 		print(array[i]);
 	}
 	print("********");
+}
+
+function findExcluded(dir){
+	string = "";
+	array = getFileList(dir);
+	for (i = 0; i < array.length; i++){
+		if (indexOf(array[i], "excluded") > 0){
+			ROI_no = replace(replace(array[i], "-excluded.tif", ""), "ROI_", "");
+			string = string + ROI_no + ", ";
+		}
+	}
+	return string;
+}
+
+function excludeKymograms(list, operation){
+	for (i = 0; i < list.length; i++){
+		if (operation == "exclude"){
+			old_name = kymo_path + "ROI_" + list[i] + ".tif";
+			new_name = replace(old_name, ".tif", "-excluded.tif");
+		} else if (operation == "include"){
+			old_name = kymo_path + "ROI_" + list[i] + "-excluded.tif";
+			new_name = replace(old_name, "-excluded", "");
+		}
+		File.rename(old_name, new_name); 
+		close("Log");
+	}
 }

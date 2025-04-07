@@ -87,6 +87,12 @@ Added function for displaying kymograms after they are made (they are not made c
 	-> included Gauss filtering before processing to get cleaner images without high frequency noise
 	-> fixed filtering of quadrants - not all was removed as intended
 
+
+7. 4. 2025
+*Display kymograms*
+- added option to exclude kymograms from display+analysis and include them back again - this boils down to adding the "-excluded" suffix to the raw kymogram filename and using an array to hold information about which kymograms are to be ignored when opening. This required defining two helper functions.
+- 
+
 -------------------------------------------eof-------------------------------------------
 
 *Analyze kymograms*
