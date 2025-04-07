@@ -1,6 +1,7 @@
 test_images/
 test_set/
 cache/
+cache
 *.tif
 *.czi
 
