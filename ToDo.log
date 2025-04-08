@@ -1,26 +1,23 @@
-*create kymograms*
+**create kymograms**
 - fix create_kymograms so that the channels are handled correctly - ask user to select channels?
-- figure out a way how to work with ROISets that include SUM/AVG/MEAN in the name - rename or use some wildcard?
-	-> ROISet file handling will need to be sorted out, perhaps rename them to correcpond to the original image name, i.e., without -SUM, -MAX, -AVG, -processed, -corr; this requires updating of the other macros as well!!!
 - figure out how to handle tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
 
 
-*display kymograms*
-- fix image size handling, so that it does not get too small when run("Tile") is applied mutliple times (it gets smaller each time)
-- add option to exclude kymograms from analysis; keep the ROIs - the ROIs need to be left unchanged, as their numbers are tied to the kymograms. -> kymograms-exclude folder or rename the file to contain "exlcude"?
-- list excluded kymograms and add an option to bring them back
+**display kymograms**
 
 
-*analyze kymograms*
+
+**analyze kymograms**
 - define quantification options and incorporated them. 
-- when cycling through ROIs to analyze respective kymograms, implement an if statement into analysis - if file exists, open it. Else break cycle or something like that. / if !endsWith(file, "exclude")
+- when cycling through ROIs to analyze respective kymograms, implement an if statement into analysis - if file exists, open it. Else break cycle or something like that. / if (!endsWith(file, "exclude.tif"))
 
 
-*general*
+**general**
 - update help messages
-- initial window LUT selection - used images can have fewer or more than 2 channels; other channels than 1 and 2 might be used for kymogram creation. This needs to be fixed - some older version asked the user what was what
+- add comments
+- initial window LUT selection - used images can have fewer or more than 2 channels; other channels than 1 and 2 might be used for kymogram creation. This needs to be fixed - some older version asked the user what was what - see also 'create_kymograms' section
 
 
 
-**ROI_prep and Quantify macros**
+****ROI_prep and Quantify macros****
 I decided on naming ROISets for any type of image with the RAW image name (+ROISet.zip), i.e., excluding suffixes like "-AVG", "-SUM", "-MAX", "-MIN", "-processed", "-corr"). This will need to be implemented in previous macros, and will be considered a major change.

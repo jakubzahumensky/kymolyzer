@@ -3,38 +3,38 @@ I started to write the code in python in Fiji environment, so that I could use m
 
 
 27. 3. 2025
-*Started writing the actual code*
+Started writing the actual code.
 
 It is recommended that users first run the "correct and project" macro, define the ROIs from SUM/MAX intensity projections and then use them with the corrected images.
 - TODO: some renaming magic will need to take place here, otherwise the ROI handling will be cumbersome and require the user to rename things. Maybe search for SUM/MAX/AVG in ROISet names and remove them?
 
 I wanted to redo the processing logic behind the recursive processing of files to avoid evaluating if/else for each file separately, so I wanted to first select what should be done (create, display, analyze) - only once, then go through all the files. Apparently, this can't be done in Fiji macro language without repeating the whole processFolder function in each individual process function.
 
-*Create kymograms*
+**Create kymograms**
 From each ROI a kymogram is created and scaled to stretch it in the 'y' dimension for better display. Kymographs scaled without interpolation and using 'bilinear' interpolation are saved for each ROI. The scaled kymograms have a separate folder inside the folder with kymograms.
 
-*Display kymograms*
+**Display kymograms**
 Added function for displaying kymograms after they are made (they are not made correctly at this stage), asks user to specify ROIs for which they want to display kymograms. This is useful for larger images with lots of ROIs. Currently, user can specify a range, not a comma-delimited list. I have developed a function to handle such input before, for Quantify macro, so I might implement it here as well.
 
-*Analyze kymograms* structure in place:
+**Analyze kymograms** structure in place:
 - there are three options for the user to chose from: create, display and analyze kymograms; after each is finished, the initial dialog will be displayed again, until the user selects "EXIT". Short help message is included.
 - macro will presuppose that ROIs are already defined AND that the data structure is exactly the same as for the published "microscopy analysis" macros. I thought I might add this functionality to this macro as a module or a script to be loaded from a spearate file, but was unable to make it work.
 
 
 28. 3. 2025
-*Display kymograms*
+**Display kymograms**
 - tweaked to only count files, not folders (there is a 'scaled/' folder in each folder with kymograms).
 - updated how input is handled based on sort_channels() function from 'Quantify' macro; this is an updated version that can handle a mixture of ranges and individual numbers, sorts them in ascending order and removes duplicates, if present.
 - In the current version, the "scaled" option shows only kymograms scaled without interpolation.
 
 
 31. 3. 2025
-*version 0.1.3*
+***version 0.1.3***
 
-*initial dialog window*
+**initial dialog window**
 - position set so that it is in to top right corener of the screen, just below the Fiji app
 
-*Display kymograms*
+**Display kymograms**
 - fix behaviour for "out of bounds input" -> selected ROIs are converted to first (for input below 1) or last (for input too high) ROI
 - reworked the selection of "next image" display. Now it contains options to: display previous, current, next, and also directly choose from the list of file in the current directory. This required quite a bit of gymnastics and changing how some loops and functions work.
 - Upon opening an image, no ROIs are first shown and user is asked to decide which to display. Same when going to the next image.
@@ -43,16 +43,16 @@ Added function for displaying kymograms after they are made (they are not made c
 
 
 1. 4. 2025
-*Analyze kymograms*
+**Analyze kymograms**
 - inital dialog window asks for LUTs to be used for channel 1 and 2 - if there is another structure, this will need to be considered here, fewer or more channels are possible
 
-*Create kymograms*
+**Create kymograms**
 - images to make kymograms from are looked for in the "data-processed" folder!!!
 	-> ROISet file handling will need to be sorted out, perhaps rename them to correcpond to the original image name, i.e., without -SUM, -MAX, -AVG, -processed, -corr; this requires updating of the other macros as well!!!
 - LUTs specified in initial window are used; kymogram creation works correctly
-- if there are kymograms already made for some of the images, user is warned and asked if the old ones should be overwritten. Currently, not overwriting older kymograms does not save any processing time. The macro looks if there are some and then gives a warning if there is at least one. No list is made that could be checked in the process_folder() function. I am not sure if it actually makes any sense to check the presence of kymograms, except to save a bit of time when *Create kymograms* is selected by mistake
+- if there are kymograms already made for some of the images, user is warned and asked if the old ones should be overwritten. Currently, not overwriting older kymograms does not save any processing time. The macro looks if there are some and then gives a warning if there is at least one. No list is made that could be checked in the process_folder() function. I am not sure if it actually makes any sense to check the presence of kymograms, except to save a bit of time when **Create kymograms** is selected by mistake
 
-*Display kymograms*
+**Display kymograms**
 - the position and size of the current image is set so that it is displayed in the top left corner of the screen, size screenWidth/3 x screenWidth/3 - will this cause issues for non-square images? Apparently not - the longer side is set to screenWidth/3
 - positioning of kymograms - in the are to the right of the image, the kymograms are tiled until they reach the right corner of the screen, then next row starts at screenWidth/3 from the left, etc. Problems will arise if too many kymograms are to be displayed for an image (especially the scaled ones); but I think I will leave it like this, as displaying 65 kymograms for a single image does not make much sense anyway
 - added option to display 'scaled-interpolated (bilinear)' kymograms
@@ -61,49 +61,59 @@ Added function for displaying kymograms after they are made (they are not made c
 
 
 3. 4. 2025
-*Analyze kymograms*
+**Analyze kymograms**
 - defined a "printArray(array)" function to make printing of arrays easier (for debugging)
 - unified naming scheme for variables (names use underscores to separate words) and functions (dromedarycase [medial capitals])
 - decided on naming ROISets for any type of image with the RAW image name (+ROISet.zip), i.e., excluding suffixes like "-AVG", "-SUM", "-MAX", "-MIN", "-processed", "-corr"). This will need to be implemented in previous macros, and will be considered a major change.
 
-*Create kymograms*
+**Create kymograms**
 
-*Display kymograms*
+**Display kymograms**
 - fixed displaying of ROIs - parsing numbers was required as soon as range is "-"-separated to correctly handle ranges like 9-10
 - simplified opening of ROIs, since they are explicitly specified by the user and are allways called "ROI_x" (x being the user input), they can be opened by directly calling the files, which holds true for interpolated images
  
-*Analyze kymograms*
+**Analyze kymograms**
 - rewrote 'fourier filtering' to be less repetitive, resulting in code that is harder to understand...
 - updated 'fourier filtering' to get cleaner traces (by removing more than the specified quadrants, so that the central part of fourier image is removed as well
 - made placeholder functions to write down various analysis options
 
 
 4. 4. 2025
-*general*
+**general**
 - formatted changelog
 
-*Analyze kymograms*
-- 'fourier filtering'
+**Analyze kymograms**
+*fourier filtering*
 	-> included Gauss filtering before processing to get cleaner images without high frequency noise
 	-> fixed filtering of quadrants - not all was removed as intended
 
 
 7. 4. 2025
-*Display kymograms*
+***version 0.1.4.***
+
+**Display kymograms**
 - added option to exclude kymograms from display+analysis and include them back again - this boils down to adding the "-excluded" suffix to the raw kymogram filename and using an array to hold information about which kymograms are to be ignored when opening. This required defining two helper functions.
-- 
+
+
+8. 4. 2025
+**Analyze kymograms**
+*fourier filtering*
+	-> fixed how the "quadrant" removal for "static" trajectories works - it used roation and removal of squares, which resulted in removal of more information than necessary; now nothing is rotated and triangles are removed instead
+	-> this lead to reorganization of the function a bit
+	-> fixed contrast stretching so that all images of dominant trajectory directions use the same contrast settings; I thought this was already the case, but it was not. Now the merged images correspond to the original iamges much better
+
 
 -------------------------------------------eof-------------------------------------------
 
-*Analyze kymograms*
+**Analyze kymograms**
 -
 
-*Create kymograms*
+**Create kymograms**
 -
 
-*Display kymograms*
+**Display kymograms**
 -
 
-*Analyze kymograms*
+**Analyze kymograms**
 -
 
