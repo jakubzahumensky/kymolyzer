@@ -152,7 +152,6 @@ Added function for displaying kymograms after they are made (they are not made c
 - Fourier filtering - saving of filtered kymograms for all specified channels, in separate folders, rewrote macro to accomodate for this
 - run("Extend Image Borders",...); command does not work as of now at home computers (remote work today); so I have written a function that does this.
 
-
 17. 4. 2025
 
 **Display kymograms**
@@ -162,6 +161,7 @@ Added function for displaying kymograms after they are made (they are not made c
 - in the stored 0.2.0 everything implemented so far works, from creation of kymograms, to their display, to filtering into dominant directions (fourier). In the following versions, the development of quantification methods and parameters will be the main focus and I plan to change versions (last digit) after each new method is implemented.
 
 - background intensity measurement needs to be implemented so that the CV measurements in kymograms make sense
+
 
 18. 4. 2025
 *version 0.2.1 under development*
@@ -175,6 +175,11 @@ Added function for displaying kymograms after they are made (they are not made c
 - implemented coefficient of variation analysis for each kymogram - first, CV is estimated for each pixel column in the kymogram (i.e., along the time axis), then the numbers are averaged. CV for Cwr1 is (from the limited test set) 2-3 times higher than that of Sur (CV_Sur7 ~ 0.1)
 
 *this concludes development of version 0.2.1*
+
+-------------------------------------------eof-------------------------------------------
+
+**general**
+-
 
 -------------------------------------------eof-------------------------------------------
 

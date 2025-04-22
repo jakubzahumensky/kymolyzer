@@ -6,13 +6,12 @@
 - spearate prepare() function, it's driving me crazy as it is.
 
 
-
 **create kymograms**
 - figure out how to handle tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
 
 
 **display kymograms**
--
+- add option to display Fourier-filtered kymograms - all three options
 
 
 **analyze kymograms**
