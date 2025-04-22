@@ -1,23 +1,26 @@
+**general**
+- update help messages
+- add comments
+- when it's all done and ready, check for obsolete functions
+
+- spearate prepare() function, it's driving me crazy as it is.
+
+
+
 **create kymograms**
-- fix create_kymograms so that the channels are handled correctly - ask user to select channels?
 - figure out how to handle tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
 
 
 **display kymograms**
-
+-
 
 
 **analyze kymograms**
-- define quantification options and incorporated them. 
-- when cycling through ROIs to analyze respective kymograms, implement an if statement into analysis - if file exists, open it. Else break cycle or something like that. / if (!endsWith(file, "exclude.tif"))
-
-
-**general**
-- update help messages
-- add comments
-- initial window LUT selection - used images can have fewer or more than 2 channels; other channels than 1 and 2 might be used for kymogram creation. This needs to be fixed - some older version asked the user what was what - see also 'create_kymograms' section
+- define quantification options and incorporated them.
+    -> see the analyzeKymograms() function
+- add some sort of progress bar or something; as the analysis will take a while (fourier transformations are not very quick even in batch mode)
 
 
 
-****ROI_prep and Quantify macros****
+***ROI_prep and Quantify macros***
 I decided on naming ROISets for any type of image with the RAW image name (+ROISet.zip), i.e., excluding suffixes like "-AVG", "-SUM", "-MAX", "-MIN", "-processed", "-corr"). This will need to be implemented in previous macros, and will be considered a major change.

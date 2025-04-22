@@ -89,13 +89,16 @@ Added function for displaying kymograms after they are made (they are not made c
 
 
 7. 4. 2025
-***version 0.1.4.***
+***version 0.1.4***
 
 **Display kymograms**
 - added option to exclude kymograms from display+analysis and include them back again - this boils down to adding the "-excluded" suffix to the raw kymogram filename and using an array to hold information about which kymograms are to be ignored when opening. This required defining two helper functions.
 
 
 8. 4. 2025
+**general**
+- added some comments for functions ("docstrings") etc.
+
 **Analyze kymograms**
 *fourier filtering*
 	-> fixed how the "quadrant" removal for "static" trajectories works - it used roation and removal of squares, which resulted in removal of more information than necessary; now nothing is rotated and triangles are removed instead
@@ -103,9 +106,79 @@ Added function for displaying kymograms after they are made (they are not made c
 	-> fixed contrast stretching so that all images of dominant trajectory directions use the same contrast settings; I thought this was already the case, but it was not. Now the merged images correspond to the original iamges much better
 
 
--------------------------------------------eof-------------------------------------------
+9. 4. 2025
+***version 0.1.5***
+
+**general**
+- renamed variables to make the code easier to understand and more unified (kymo_dir -> dir_kymograms, roi_Dir -> dir_ROIs etc)
+
+**Display kymograms**
+- added option to display filtered kymograms if they exist, this needs to be adjusted to work properly
 
 **Analyze kymograms**
+- started implementing fourier filtering
+
+
+10. 4. 2025
+***version 0.2.0***
+- started development of this version
+- overal logic was changed a bit, see details below; not backwards compatible with 0.1.5
+
+**general**
+- I wanted to separate prepare() into prepareImage() and prepareDirs(), but a simple division resulted in errors whose origin I did not understand. I will probably try again later, since it does not make sense to open microscopy images for kymogram analysis.
+
+**Create kymograms**
+- Only raw kymograms are saves, into 'raw' folder within the 'kymogram' directory. The scaled are cereated on demand.
+
+**Display kymograms**
+- scaled versions of kymograms are created on demand within this interface, the user can now specify the degree of stretch in the y direction. This change was made to enable scaling of filtered kymograms without the need to create more folders and save more images. This makes the code simpler and more flexible. It also makes the display of scaled kymograms slower, but it saves quite a bit of HDD space and also some programming headache.
+
+**Analyze kymograms**
+- finished incorporating Fourier filtering of directions into the main macro; BUT, only channel 1 is currently processed this way. This will need to be corrected!!!
+
+
+15. 4. 2025
+**general**
+- implemented handling of channels - this turned out to be more complicated than anticipated, but should now be complete
+- the initial window asks the user to specify channels and their LUTs. The inputs are strings, which are later converted to arrays
+
+**Display kymograms**
+- fixed how the macro looks for filtered kymograms, as I had to change the directory names for these (based on specified channels) - it does not cycle through channels, but looks for folders that start with "filtered"
+- fixed Display for filtered kymograms by separating the displayKymograms() function into two, defining a new showKymograms() function that takes in x and y offsets as inputs -> the position of the first kymogram is specified this way. The function returns y offset + height of the last image, so the kymograms for the next channel are loaded starting in the next row, i.e., corresponding kymograms are displayed below each other
+- the raw kymograms are now also displayed in this separated form, in grayscale
+
+**Analyze kymograms**
+- handling of channels implemented - the user is asked to specify the channels to be analyzes, only at the beginning. However, the query is placed at a spot within a cycle, so I had to use a dirty trick to only have it displayed once: if (file_counter == 0) - this originates in the inability to pass functions as arguments into other functions, which dictates how the whole macro logic operates.
+- Fourier filtering - saving of filtered kymograms for all specified channels, in separate folders, rewrote macro to accomodate for this
+- run("Extend Image Borders",...); command does not work as of now at home computers (remote work today); so I have written a function that does this.
+
+
+17. 4. 2025
+
+**Display kymograms**
+- added option for the user to choose to display kymograms (raw or filtered; not filtered-merged) in greyscale
+
+*this concludes the switch from 0.1.5 to 0.2.0*
+- in the stored 0.2.0 everything implemented so far works, from creation of kymograms, to their display, to filtering into dominant directions (fourier). In the following versions, the development of quantification methods and parameters will be the main focus and I plan to change versions (last digit) after each new method is implemented.
+
+- background intensity measurement needs to be implemented so that the CV measurements in kymograms make sense
+
+18. 4. 2025
+*version 0.2.1 under development*
+**general**
+- separated prepare() and prepROIs(), as I don't need to open ROI manager every time
+- adjusted some variable names to make their use and meaning clearer
+-> these resulted in some unforseen issues, but I fixed them (global variables rule)
+
+**Analyze kymograms**
+- implemented background measurement (function taken from the Quantify macro)
+- implemented coefficient of variation analysis for each kymogram - first, CV is estimated for each pixel column in the kymogram (i.e., along the time axis), then the numbers are averaged. CV for Cwr1 is (from the limited test set) 2-3 times higher than that of Sur (CV_Sur7 ~ 0.1)
+
+*this concludes development of version 0.2.1*
+
+-------------------------------------------eof-------------------------------------------
+
+**general**
 -
 
 **Create kymograms**
