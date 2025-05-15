@@ -176,12 +176,43 @@ Added function for displaying kymograms after they are made (they are not made c
 
 *this concludes development of version 0.2.1*
 
--------------------------------------------eof-------------------------------------------
+
+22. - 23. 4. 2025
+*version 0.2.2 under development*
+**Analyze kymograms**
+- calculation of autocorrelation functions added; for each pixel column (i.e., along time axis) intensity profile in the kymogram; now I need to figure out what to do with it
+
+
+24. 4. 2025
+**Analyze kymograms**
+- realized that the autocorrelation function is not very useful here
+
+
+25. 4. - 15. 5. 2025
+- finalized version 2.2.0
 
 **general**
--
+- added: brief summary of the macro and comments for all functions
+- clearly marked main sections in the code, using lines of asteriskes as dividers, and titles in capitals
+- reorganized the code to reflect clean code practices - lot of functions divided into smaller functions
+- order of function definitions is as they come in the code, the actual definition following the last use (as soon as possible, based on hierarchy and order)
+- updated help messages
+- implemented results output into a csv file, including an option to resume aborted analysis (somme issues of unknown origin with this), using lists of temporary and processed files; this invovled addition of a large amount of addition functions. These were mostly copied from the "Quantify" macro
+
+**Draw ROIs**
+- added option for the user to define ROIs manually - this is advantageous for smaller images with not too many cells.
+ -> The ellipse tool is preselected, bu tany area shape or line is accepted
+
+**Analyze kymograms**
+- Implemented extraction of individual traces from direction-filtered kymograms. These are then used for:
+ -> analysis of average speeds (all traces)
+ -> implemented analysis of average lifetimes (traces that either start and finish within the kymogram or span the whole kymogram)
+
+**Commmit message**
+"Implemented analysis of average speeds and lifetimes, and output of results into a csv file. ROIs can now be manually defined using the macro. Big overhaul of function structure and order. Updated comments and help messages. See changelog for details."
 
 -------------------------------------------eof-------------------------------------------
+
 
 **general**
 -
