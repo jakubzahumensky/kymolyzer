@@ -211,6 +211,17 @@ Added function for displaying kymograms after they are made (they are not made c
 **Commmit message**
 "Implemented analysis of average speeds and lifetimes, and output of results into a csv file. ROIs can now be manually defined using the macro. Big overhaul of function structure and order. Updated comments and help messages. See changelog for details."
 
+
+16. 5. 2025
+**Analyze kymograms**
+- analyze average speed and lifetime
+ -> tested bilinear and bicubic interpolation when stretching kymograms. While the calculation of these parameters should in theory work better with smoothed images, the interpolation introduces certain artifacts, changing the speeds and lifetimes signlificantly, in some cases. Therefor No interpolation is used here, same as before.
+ -> combined the respective functions into a single one, since it works with the same structure and parameters.
+ -> changed the time_stretch factor from 10 to 20 to get more accurate readings. Going higher slows down the macro significantly, without providing a significant change in numbers.
+ -> added number of traces into the Results table
+ -> added calculation of (weighted - by the number of traces) speed averaged from forward and backward traces
+
+
 -------------------------------------------eof-------------------------------------------
 
 
@@ -221,6 +232,9 @@ Added function for displaying kymograms after they are made (they are not made c
 -
 
 **Display kymograms**
+-
+
+**Filter kymograms**
 -
 
 **Analyze kymograms**
