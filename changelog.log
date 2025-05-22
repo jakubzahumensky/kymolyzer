@@ -222,6 +222,36 @@ Added function for displaying kymograms after they are made (they are not made c
  -> added calculation of (weighted - by the number of traces) speed averaged from forward and backward traces
 
 
+19. 5. 2025
+**Analyze kymograms**
+- fixed 'replace in array' function and weighted average speed and lifetime calculation
+
+v0.2.2.1 commited
+
+
+22. 5. 2025
+**general**
+- added option to choose between tangential and transversal images
+- 'k' used in all instances then the loops go through filter types (forward, backward, static)
+- reorganized the code to reflect the order of functions after the addition of several new ones
+
+**Display kymograms**
+- added option to display calculated movement traces
+- regular kymograms are now displayed all the time, at the top of the screen, followed by the specified kymogram type
+- fixed y-offset issue that arose sometimes when the kymograms just fit into a single row (an empty row was dipslayed between the channels)
+- merged images of direction-fitlered kymograms can now also be displayed in greyscale
+
+**Filter kymograms**
+- calculation of binary traces is now part of this section, as they need to be available before analysis is started, to calculate overlap images
+
+**Analyze kymograms**
+- implemented calculation of overlap trace images, i.e., traces of colocalization/coupling of signals in the two channels defined by the user (in the analysis dialog window, one or two channels have to be specified); these are then analyzed for:
+ -> number, speed and lifetime of traces
+ -> total fraction of traces overlap, i.e., how much of the signal of the current channel coincides/colocalizes with signal from the other specified channel
+ Certain things are calculated multiple times (like the overlap images), but it works
+ 
+** v0.2.3 Commmit message**
+"Added options to: choose tangential/transveral image type; display calculated movement traces; display mirection-filtered merge images in greyscale. Implemented calculation of signal coincidence/colocalization (called coupling in the code at the moment) and respective quantififications. See changelog for details."
 -------------------------------------------eof-------------------------------------------
 
 

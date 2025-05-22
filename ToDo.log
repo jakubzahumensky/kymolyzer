@@ -4,15 +4,15 @@
 
 
 **create kymograms**
-- figure out how to handle tangential images - make eliptical ROIs is fine, I guess, but maybe fitting the ROIs with lines along the long axis would make more sense? Ask user?
+-
 
 
 **display kymograms**
-
+-
 
 
 **filter kymograms**
-
+-
 
 
 **analyze kymograms**
@@ -20,4 +20,4 @@
 - continue analysis does not work properly
 - define quantification options and incorporated them.
     -> see the analyzeKymograms() function
-- "Asi mě nic dalšího nenapadá, pokud to řekne, jestli jsou/nejsou ty dva studované proteiny kolokalizované a jak se ten signál u transportéru (Nha1, Trk1) pohybuje v membráně za různých podmínek. Pokud bychom měli Trk1 a Nha1 spolu nebo Pma1-Nha1, Pma1-Trk1, tak, jak se pohybují vzájemně vůči sobě za různých podmínek – pH, nízký/vyskoý KCl."
+- check if the macro works if only one channel is available - specifically the analysis dialog window and the coupling analysis
