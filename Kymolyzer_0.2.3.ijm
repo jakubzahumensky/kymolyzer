@@ -34,7 +34,7 @@ if (test == false)
 	setBatchMode(true);
 
 /* definitions of constants used in the macro below */
-publication = "Zahumensky & Malinsky, 2004; doi: 10.1093/biomethods/bpae075";
+publication = "Zahumensky & Malinsky, 2024; doi: 10.1093/biomethods/bpae075";
 GitHub_microscopy_analysis = "https://github.com/jakubzahumensky/microscopy_analysis";
 GitHub_kymolyzer = "https://github.com/jakubzahumensky/kymolyzer";
 extension_list = newArray("czi", "oif", "lif", "tif", "vsi"); // only files with these extensions will be processed, add your favourite one if it's missing
@@ -47,6 +47,7 @@ images_without_kymograms_list = "images_without_kymograms.csv";
 //LUTs_filtered = newArray("Red", "Green", "Blue");
 LUTs_filtered = newArray("Magenta", "Cyan", "Yellow");
 image_types = newArray("transversal", "tangential");
+boolean = newArray("yes", "no");
 
 dir_kymogram_source_data = "data-processed";
 initial_folder = "";
@@ -87,6 +88,7 @@ var background = 0;
 
 /****************************************************************************************************************************************************/
 /* The macro is started by calling the initialDialogwindow function, using the initial_folder as the default folder to be analyzed. */
+run("Set Measurements...", "mean min integrated redirect=None decimal=3");
 initialDialogWindow(initial_folder);
 
 
@@ -100,48 +102,77 @@ initialDialogWindow(initial_folder);
 function initialDialogWindow(specified_folder){
 	closeAllWindows();
 	help_message = "<html>"
-		+"<center><b>Kymolyzer, version " + version + "</b></center>"
-		+"<center><i>source:" + GitHub_kymolyzer + "</i></center>"
-		+"<br>"
-		+"It is strongly recommended that the raw images are corrected for drift and bleaching before defining regions of interest (ROIs), "
-		+"for example using the <i>Correct and project.ijm</i> [2] macro, which also provides an option for different types of Z projections. "
-		+"Working with maximum intesity projections can be helpful when working with images with low signal. "
-		+"The ROIs can be defined using e.g. Cellpose, as described in [1], or in any other way, but they need to be named and organized as described in [1]. "
-		+"They can also be defined manually using the <i>Draw ROIs</i> option of this macro, which respects these requirements. <br>"
-		+"<br>"
-		+"<b>Draw ROIs</b><br>"
-		+"Manually create ROIs for your images. Images are displayed one at a time, together with a prompt and details on how to proceed. <br>"
-		+"<br>"
-		+"<b>Create kymograms</b><br>"
-		+"Create kymograms from defined ROIs. Error is displayed if no ROIs are defined.<br>"
-		+"<br>"
-		+"<b>Display kymograms</b><br>"
-		+"Images in the specified folder are displayed one-by-one, together with kymograms for each cell (defined ROI).<br>"
-		+"<br>"
-		+"<b>Filter kymograms</b><br>"
-		+"Kymograms are fitlered using Fourier transformations into dominant directions: backward, forward, statis.<br>"
-		+"<br>"
-		+"<b>Analyze kymograms</b><br>"
-		+"Kymograms are quantified. Results are saved in a csv file that can be further processed using <i>R scripts</i> published previously [1, 2].<br>"
-		+"<br>"
-		+"<b>References:</b><br>"
-		+"[1] " + publication + "<br>"
-		+"[2] " + GitHub_microscopy_analysis + "<br>";
+		+ "<center><b>Kymolyzer, version " + version + "</b></center>"
+		+ "<center><i>source:" + GitHub_kymolyzer + "</i></center><br>"
+		
+		+ "It is strongly recommended that the raw images are corrected for drift and bleaching before defining regions of interest (ROIs), "
+		+ "for example using the <i>Correct and project.ijm</i> [2] macro, which also provides an option for different types of Z projections. "
+		+ "Working with maximum intesity projections can be helpful when working with images with low signal. "
+		+ "The ROIs can be defined using e.g. Cellpose, as described in [1], or in any other way, but they need to be named and organized as described in [1]. "
+		+ "They can also be defined manually using the <i>Draw ROIs</i> option of this macro, which respects these requirements. <br><br>"
+		
+		+ "<b>Directory</b><br>"
+		+ "Specify the directory where you want <i>Fiji</i> to start looking for folders with images. The macro works <i>recursively</i>, i.e., it looks into all <i>sub</i>folders. "
+		+ "All folders with names <i>ending</i> with the word \"<i>data</i>\" are processed. All other folders are ignored. <br><br>"
+		
+		+ "<b>Image type</b><br>"
+		+ "Select if your images represent <i>transversal</i> (also called <i>equatorial</i>) or <i>tangential</i> sections of the cells. <br><br>"
+		
+		+ "<b>Subset</b><br>"
+		+ "If used, only images with filenames containing specified <i>string</i> (i.e., group of characters and/or numbers) will be processed. "
+		+ "This option can be used to selectively process images of a specific strain, condition, etc. "
+		+ "Leave empty to process all images in specified directory (and its subdirectories). <br><br>"
+		
+		+ "<b>Channel(s)</b><br>"
+		+ "Specify image channel(s) to be processed. Use comma(s) to specify multiple channels or a dash to specify a range. <br><br>"
+		
+		+ "<b>Channel display</b><br>"
+		+ "Specify LUTs (lookup tables) image channel(s) to be used for display of images. The calculated kymograms are saved using these. "
+		+ "Note that the LUT names need to correspond with the names used by Fiji. <br><br>"
+		
+		+ "<br><center><b><i>available processing options:</i></b></center><br>"
+		+ "Select the appropriate operation from the list below. "
+		+ "The available operations need to be run in the order in which they are listed. The macro will fail otherwise. "
+		+ "After an operation is finished, the next one is preselected automatically. <br><br>"
+		
+		+ "<b>Draw ROIs</b><br>"
+		+ "Manually create ROIs for your images. Images are displayed one at a time, together with a prompt and details on how to proceed. <br><br>"
+		
+		+ "<b>Create kymograms</b><br>"
+		+ "Create kymograms from defined ROIs. Error is displayed if no ROIs are defined. <br><br>"
+		
+		+ "<b>Display kymograms</b><br>"
+		+ "Images in the specified folder are displayed one-by-one, together with kymograms for each cell (defined ROI). "
+		+ "If direction-filtered images of kymograms and individual traces have been already calculated, they can be displayed as well. "
+		+ "In this case, the regular kymograms are displayed as well, to facilitate comparison. <br><br>"
+		
+		+ "<b>Filter kymograms</b><br>"
+		+ "Kymograms are filtered using Fourier transformations into dominant directions: backward (bwd), forward (fwd), static (stat). "
+		+ "These are then thresholded and binarized to extract prominent individual traces. <br><br>"
+		
+		+ "<b>Analyze kymograms</b><br>"
+		+ "Kymograms are quantified. Results are saved in a csv file that can be further processed using <i>R scripts</i> published previously [1, 2]. "
+		+ "For details on the quantified parameters reported in the Results table, consult thededicated pdf file. <br><br>"
+		
+		+ "<b>References:</b><br>"
+		+ "[1] " + publication + " <br>"
+		+ "[2] " + GitHub_microscopy_analysis + " <br>"
+		+ "</html>";
 	Dialog.createNonBlocking("Kymolyzer");
 		Dialog.addDirectory("Directory:", specified_folder);
-		Dialog.addString("Subset (optional):", "");
-		Dialog.addString("Channels for kymograms", "1, 2", 5);
 		Dialog.addChoice("Image type:", image_types);
-		Dialog.addString("Channel display:", "Magenta, Cyan", 20);
+		Dialog.addString("Subset (optional):", "");
+		Dialog.addString("Channels:", "1, 2", 5);
+		Dialog.addString("Channel display:", "Magenta, Cyan", 15);
 		Dialog.addChoice("Select an operation:", process_choices, process_choices[process_ID + 1]);
 //		Dialog.addChoice("Select an operation:", process_choices, process_choices[4]);
 		Dialog.setLocation(screenWidth*2.2/3, screenHeight/9.5);
 		Dialog.addHelp(help_message);
 		Dialog.show();
 		specified_folder = fixFolderInput(Dialog.getString());
+		image_type = Dialog.getChoice();
 		subset = Dialog.getString(); // global variable
 		channels = sortIDs(Dialog.getString()); // global variable
-		image_type = Dialog.getChoice();
 		LUTs = sortLUTs(Dialog.getString()); // global variable
 		process = Dialog.getChoice(); // global variable
 
@@ -197,7 +228,7 @@ function processFolder(dir, processing_function){
 			file = dir + list[i];
 			title = File.getNameWithoutExtension(file);
 			extension = substring(file, lastIndexOf(file, ".") + 1);
-			if (endsWith(dir, "/" + dir_kymogram_source_data + "/") && indexOf(file, subset) >= 0 && endsWith(File.getParent(dir), image_type) && contains(extension_list, extension)){
+			if (endsWith(dir, "/" + dir_kymogram_source_data + "/") && indexOf(list[i], subset) >= 0 && endsWith(File.getParent(dir), image_type) && contains(extension_list, extension)){
 				i = processFile(processing_function, i);
 			}
 		}
@@ -323,25 +354,58 @@ function displayKymograms(k){
 	excluded_string = findExcluded(kymogram_path);
 	display_type = "regular";
 	time_stretch = 1;
-	grayscale = false;
-
+//	grayscale = false;
+	grayscale_boolean = "no";
+	
 	while (display_next == this_img){
+		help_message = "<html>"
+			+ "Available kymograms are displayed alongside the original image that shows the defined ROIs. <br><br>"
+			
+			+ "<b>Image</b><br>"
+			+ "Select image for which you desire to display kymograms. <br><br>"
+
+			+ "<b>Kymograms</b><br>"
+			+ "Select which kymograms you wish to display. "
+			+ "For specification of multiple ROIs, comma-separated lists, ranges and their combinations are valid as input. <br><br>"
+			
+			+ "<b>Kymogram type</b><br>"
+			+ "Select the type of kymograms to display. By default, the regular (raw) ones are displayed. "
+			+ "If direction-filtered and prominent traces have been calculated, they can be displayed as well. "
+			+ "In this case, the regular ones are displayed in the top of the screen, followed by the selected type. "
+			+ "This makes it easier to correlate everything together. <br><br>"
+			
+			+ "<b>Grayscale</b><br>"
+			+ "Select if you want to display the kymograms in colours or greyscale. "
+			+ "The colours of regular kymograms are specified by the user in the initial dialog window. "
+			+ "The colours of direction-filtered images are hard-coded and are as follows: forward - magenta, backward - cyan, static - yellow. <br><br>"
+			
+			+ "<b>Stretch in time</b><br>"
+			+ "Select how much the kymograms should be stretched in the y-dimension for display. "
+			+ "Note that this only affects the display to facilitate the visual inspection of the kymogram and has no effect on the downstream analysis. <br><br>"
+			
+			+ "<b>Exclude/Restore kymograms</b><br>"
+			+ "Specify the ROIs/kymograms that should be excluded from both display and analysis. "
+			+ "For specification of multiple ROIs, comma-separated lists, ranges and their combinations are valid as input. "
+			+ "Currently excluded ROIs/kymograms are listed above these options and can be restored using the second of the options. <br><br>"
+			
+			+ "</html>";
 		Dialog.createNonBlocking("Select ROIs for display:");
 			Dialog.addMessage("Current image (" + k+1 + "/" + list.length + "): " + list[k]);
-			Dialog.addChoice("Display next:", list_plus, this_img);
-			Dialog.addString("Kymograms to display:", kymogram_IDs_string);
-			Dialog.addChoice("Display:", display_options, display_type);
-			Dialog.addCheckbox("Display in grayscale", grayscale);
+			Dialog.addChoice("Image:", list_plus, this_img);
+			Dialog.addString("Kymograms:", kymogram_IDs_string);
+			Dialog.addChoice("Kymogram type:", display_options, display_type);
+			Dialog.addChoice("Greyscale:", boolean, grayscale_boolean);
 			Dialog.addNumber("Stretch in time:", time_stretch);
 			Dialog.addMessage("Currently excluded kymograms:" + excluded_string);
 			Dialog.addString("Exclude kymograms:", "");
 			Dialog.addString("Restore kymograms:", "");
 			Dialog.setLocation(screenWidth*2.2/3, screenHeight*5.5/9);
+			Dialog.addHelp(help_message);
 			Dialog.show();
 			display_next = Dialog.getChoice();
 			kymogram_IDs_string = Dialog.getString();
 			display_type = Dialog.getChoice();
-			grayscale = Dialog.getCheckbox();
+			grayscale_boolean = Dialog.getChoice();
 			time_stretch = Dialog.getNumber();
 			kymograms_to_exclude = sortIDs(Dialog.getString());
 			kymograms_to_include = sortIDs(Dialog.getString());
@@ -350,7 +414,12 @@ function displayKymograms(k){
 		close("ROI*");
 		if (display_next != this_img)
 			break;
-
+		
+		if (grayscale_boolean == "yes")
+			grayscale = true;
+		else
+			grayscale = false;
+		
 		kymogram_path = dir_kymograms_image_raw;
 		suffix = ".tif";
 		if (kymograms_to_exclude.length > 0)
@@ -773,25 +842,43 @@ function extendBorders(){
 function startAnalysis(){
 	if (just_started == true){
 		help_message = "<html>"
-			+"<b>Channel(s)</b><br>"
-			+"Specify image channel(s) to be processed. Use comma(s) to specify multiple channels or a dash to specify a range.<br>"
-			+"<br>"
-			+"<b>Naming scheme</b><br>"
-			+"Specify how your files are named (without extension). Results are reported in a comma-separated table, with the parameters specified here used as column headers. "
-			+"The default \"<i>strain,medium,time,condition,frame</i>\" creates 5 columns, with titles \"strains\", \"medium\" etc. "
-			+"Using a consistent naming scheme across your data enables automated downstream data processing.<br>"
-			+"<br>"
-			+"<b>Experiment code scheme</b><br>"
-			+"Specify how your experiments are coded. The macro assumes a folder structure of <i>\".../experimental_code/biological_replicate_date/image_type/data/\"</i>. See protocol for details.<br>"
-			+"<br>"
-			+"<b>Subset</b><br>"
-			+"If used, only images with filenames containing specified <i>string</i> (i.e., group of characters and/or numbers) will be processed. "
-			+"This option can be used to selectively process images of a specific strain, condition, etc. "
-			+"Leave empty to process all images in specified directory (and its subdirectories).<br>"
-			+"</html>";
+			+ "<b>Naming scheme</b><br>"
+			+ "Specify how your files are named (without extension). Results are reported in a comma-separated table, with the parameters specified here used as column headers. "
+			+ "The default \"<i>strain,medium,time,condition,frame</i>\" creates 5 columns, with titles \"strains\", \"medium\" etc. "
+			+ "Using a consistent naming scheme across your data enables automated downstream data processing. <br><br>"
+
+			+ "<b>Experiment code scheme</b><br>"
+			+ "Specify how your experiments are coded. The macro assumes a folder structure of <i>\".../experimental_code/biological_replicate_date/image_type/data/\"</i>. "
+			+ "See protocol [1] for details. <br><br>"
+
+			+ "<b>Image type</b><br>"
+			+ "Select if your images represent <i>transversal</i> (also called <i>equatorial</i>) or <i>tangential</i> sections of the cells. <br><br>"
+
+			+ "<b>Subset</b><br>"
+			+ "If used, only images with filenames containing specified <i>string</i> (i.e., group of characters and/or numbers) will be processed. "
+			+ "This option can be used to selectively process images of a specific strain, condition, etc. "
+			+ "Leave empty to process all images in specified directory (and its subdirectories). <br><br>"
+
+			+ "<b>First channel (obligatory)</b><br>"
+			+ "Image kymograms corresponding to the specified channel will be analyzed. <br><br>"
+
+			+ "<b>Second channel (optional)</b><br>"
+			+ "If specified (available), kymograms corresponding to this channel will also be analyzed. "
+			+ "In addition, the the overlap (colocalization) of the kymograms corresponding to the two specified channels will be analyzed. <br><br>"
+
+			+ "<b>Continue previous analysis</b><br>"
+			+ "If a previous analysis run have not finished successfully for some reason, it can be resumed using this option. "
+			+ "If selected, the results from already analyzed images will be loaded and the results from subsequently analyzed images will be added to theses, "
+			+ "thus resulting in a single Results table. <br><br>"
+			
+			+ "<b>References:</b><br>"
+			+ "[1] " + publication + " <br>"
+//			+ "[2] " + GitHub_microscopy_analysis + " <br>";
+			+ "</html>";
 		Dialog.create("Specify channels to be alanyzed:");
 			Dialog.addString("Naming scheme:", "strain,medium,time,condition,frame", 33);
 			Dialog.addString("Experiment code scheme:", "XY-M-000", 33);
+			Dialog.addChoice("Image type:", image_types, image_type);
 			Dialog.addString("Subset (optional):", "");
 			Dialog.addNumber("First channel:", 1);
 			Dialog.addNumber("Second channel:", 2);
@@ -800,6 +887,7 @@ function startAnalysis(){
 			Dialog.show();
 			naming_scheme = Dialog.getString();
 			experiment_scheme = Dialog.getString();
+			image_type = Dialog.getChoice();
 			subset = Dialog.getString();
 			channel_A = Dialog.getNumber();
 			channel_B = Dialog.getNumber();
@@ -819,7 +907,7 @@ function startAnalysis(){
 				initializeAnalysis(temporary_results_file, processed_images_file);
 			if (File.exists(dir_master + temporary_results_file) && File.exists(dir_master + processed_images_file))
 				processed_images = File.openAsString(dir_master + processed_images_file);
-			if (indexOf(processed_images, file) < 0)
+			if (indexOf(list[i], subset) >= 0 && indexOf(processed_images, file) < 0)
 				analyzeKymograms(temporary_results_file, processed_images_file);
 		}
 	}
@@ -857,22 +945,31 @@ function printResultsHeader(){
 		print("[" + temp_res_file + "]","# Basic macro run statistics:" + "\n");
 		print("[" + temp_res_file + "]","# Macro name: " + macro_name + "\n");
 		print("[" + temp_res_file + "]","# Macro version: " + version + "\n");
-		print("[" + temp_res_file + "]","# Date and time: " + start_year + "-" + String.pad(start_month + 1,2) + "-" + String.pad(start_dayOfMonth,2) + " " + String.pad(start_hour,2) + ":" + String.pad(start_minute,2) + ":" + String.pad(start_second,2)+"\n");
+		print("[" + temp_res_file + "]","# Date and time: " + start_year + "-" + String.pad(start_month + 1,2) + "-" + String.pad(start_dayOfMonth,2) + " " + String.pad(start_hour,2) + ":" + String.pad(start_minute,2) + ":" + String.pad(start_second,2)+ "\n");
 		print("[" + temp_res_file + "]","# Image type: " + image_type + "\n");
 		print("[" + temp_res_file + "]","# Channel: " + current_channel + "\n");
+		print("[" + temp_res_file + "]","#" + "\n");
+		print("[" + temp_res_file + "]","# Abbreviations:" + "\n");
+		print("[" + temp_res_file + "]","# bwd - backward" + "\n");
+		print("[" + temp_res_file + "]","# fwd - forward" + "\n");
+		print("[" + temp_res_file + "]","# stat - static" + "\n");
+		print("[" + temp_res_file + "]","# T - lifetime" + "\n");
+		print("[" + temp_res_file + "]","# v - speed" + "\n");
+		print("[" + temp_res_file + "]","# CV - coefficient_of_variation" + "\n");
 		print("[" + temp_res_file + "]","#" + "\n"); // empty line that is ignored in bash and R
 		column_names = "exp_code,BR_date,"
-			+ naming_scheme + ",mean_background,cell_no"
-			+ ",traces_forward,traces_backward,traces_static"
-			+ ",speed_forward_mean[nm/s],speed_backward_mean[nm/s],speed_static_mean[nm/s]"
-			+ ",lifetime_forward_mean[s],lifetime_backward_mean[s],lifetime_static_mean[s]"
-			+ ",mean_speed[nm/s],mean_lifetime[s]"
-			+ ",coefficient_of_variation";
+			+ naming_scheme + ",background,cell_no"
+			+ ",traces_fwd,traces_bwd,traces_stat"
+			+ ",v_fwd[nm/s],v_bwd[nm/s],v_stat[nm/s]"
+			+ ",T_fwd[s],T_bwd[s],T_stat[s]"
+			+ ",mean_v[nm/s],mean_T[s]"
+			+ ",CV";
 		if (channels_to_analyze.length == 2)
-			column_names += ",coupled_traces_forward,coupled_traces_backward,coupled_traces_static"
-				+ ",coupled_speed_forward_mean[nm/s],coupled_speed_backward_mean[nm/s],coupled_speed_static_mean[nm/s]"
-				+ ",coupled_lifetime_forward_mean[s],coupled_lifetime_backward_mean[s],coupled_lifetime_static_mean[s]"
-				+ ",coupled_lifetime_forward_fraction[%],coupled_lifetime_backward_fraction[%],coupled_lifetime_static_fraction[%]";
+			column_names += ",coupled_traces_fwd,coupled_traces_bwd,coupled_traces_stat"
+				+ ",coupled_v_fwd[nm/s],coupled_v_bwd[nm/s],coupled_v_stat[nm/s]"
+				+ ",coupled_T_fwd[s],coupled_T_bwd[s],coupled_T_stat[s]"
+				+ ",coupled_T_fwd_fraction[%],coupled_T_bwd_fraction[%],coupled_T_stat_fraction[%]"
+				+ ",coupled_mean_v[nm/s],coupled_mean_T[s]";
 		print("[" + temp_res_file + "]", column_names + "\n");
 }
 
@@ -902,6 +999,7 @@ function analyzeKymograms(res_file, proc_file){
 			CV = analyzeVariationAndCorrelation(kymogram, kymogram_width, kymogram_height);
 			if (channels_to_analyze.length == 2){
 				average_speeds_and_lifetimes_coupled = analyzeCoupling(kymogram_title, kymogram_width, kymogram_height);
+				mean_speed_and_lifetime_coupled = calculateWeightedMeans(average_speeds_and_lifetimes_coupled);
 				coupled_lifetimes_fractions = calculateCouplingRatios(kymogram_title);
 			}
 			printResults();
@@ -1188,13 +1286,14 @@ function printResults(){
 	parents = findParentDirs(); // [0] - experiment code, [1] - biological replicate date
 	kymogram_results = parents[0] + "," + parents[1] // [0] - experiment code, [1] - biological replicate date
 		+ "," + replace(title," ","_") + "," + background + "," + (j+1) // image title, background intensity and current ROI number
-		+ "," + arrayToString(average_speeds_and_lifetimes) //+ "," + mean_speed + "," + mean_lifetime
-		+ "," + arrayToString(mean_speed_and_lifetime)
+		+ "," + arrayToString(average_speeds_and_lifetimes) 
+		+ "," + arrayToString(mean_speed_and_lifetime) // + "," + mean_speed + "," + mean_lifetime
 		+ "," + CV;
 	if (channels_to_analyze.length == 2)
 		kymogram_results += "," + arrayToString(average_speeds_and_lifetimes_coupled)
-			+ "," + arrayToString(coupled_lifetimes_fractions);
-	print("["+ res_file +"]", kymogram_results + "\n");
+			+ "," + arrayToString(coupled_lifetimes_fractions)
+			+ "," + arrayToString(mean_speed_and_lifetime_coupled);
+	print("["+ res_file + "]", kymogram_results + "\n");
 }
 
 /* Convert and array into a string with "," as delimiter. */

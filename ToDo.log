@@ -1,6 +1,4 @@
 **general**
-- update help messages
-- when it's all done and ready, check for obsolete functions
 
 
 **create kymograms**
@@ -16,8 +14,7 @@
 
 
 **analyze kymograms**
-- subsetting option does not work when defined in analyze section
 - continue analysis does not work properly
-- define quantification options and incorporated them.
-    -> see the analyzeKymograms() function
+- add more quantification parameters?
+    -> the auto-correlation thingy?
 - check if the macro works if only one channel is available - specifically the analysis dialog window and the coupling analysis

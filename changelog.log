@@ -252,6 +252,19 @@ v0.2.2.1 commited
  
 ** v0.2.3 Commmit message**
 "Added options to: choose tangential/transveral image type; display calculated movement traces; display mirection-filtered merge images in greyscale. Implemented calculation of signal coincidence/colocalization (called coupling in the code at the moment) and respective quantififications. See changelog for details."
+
+
+23. 5. 2023
+**general**
+- updated help messages; minor tweaks might still be required
+
+**Analyze kymograms**
+- fixed subsetting issue in the analysis section - now it works properly
+- added calculateion of mean speed and lifetime of coupled traces
+- in the Results table:
+ -> changes the column titles to make them shorter
+ -> added list of abbreaviations
+
 -------------------------------------------eof-------------------------------------------
 
 
