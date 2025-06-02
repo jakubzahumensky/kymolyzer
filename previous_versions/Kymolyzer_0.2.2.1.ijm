@@ -49,7 +49,11 @@ LUTs_filtered = newArray("Magenta", "Cyan", "Yellow");
 
 dir_kymogram_source_data = "data-processed";
 initial_folder = "";
-initial_folder = "D:/Yeast/EXPERIMENTAL/microscopy/JZ-M-072-241002 - PM transporter localization and kinetics - CzBI (Olga)/250411 - Nha1, Trk1 - exp - Zeiss - confo, Airy/";
+//initial_folder = "D:/Yeast/EXPERIMENTAL/microscopy/JZ-M-072-241002 - PM transporter localization and kinetics - CzBI (Olga)/250411 - Nha1, Trk1 - exp - Zeiss - confo, Airy/";
+initial_folder = "D:/Yeast/EXPERIMENTAL/macros/JZ-IJ-004 - Kymolyzer/test_images/JZ-M-072/250411 - for 0.2.2.1/";
+default_naming_scheme = "strain,medium,time,condition,frame";
+default_naming_scheme = "strain,colony,imaging,experiment,laser,frame";
+
 
 /* definitions of global variables used in the macro below */
 var naming_scheme = "";
@@ -128,8 +132,8 @@ function initialDialogWindow(specified_folder){
 		Dialog.addString("Channels for kymograms", "1, 2", 5);
 		Dialog.addString("Channel display:", "Magenta, Cyan", 20);
 		Dialog.addString("Subset (optional):", "");
-//		Dialog.addChoice("Select an operation:", process_choices, process_choices[process_ID + 1]);
-Dialog.addChoice("Select an operation:", process_choices, process_choices[4]);
+		Dialog.addChoice("Select an operation:", process_choices, process_choices[process_ID + 1]);
+//Dialog.addChoice("Select an operation:", process_choices, process_choices[4]);
 		Dialog.setLocation(screenWidth*2.2/3, screenHeight/9.5);
 		Dialog.addHelp(help_message);
 		Dialog.show();
@@ -688,7 +692,7 @@ function startAnalysis(){
 			+"</html>";
 		Dialog.create("Specify channels to be alanyzed:");
 			Dialog.addString("Channels to be analyzed", "1-2");
-			Dialog.addString("Naming scheme:", "strain,medium,time,condition,frame", 33);
+			Dialog.addString("Naming scheme:", default_naming_scheme, 33);
 			Dialog.addString("Experiment code scheme:", "XY-M-000", 33);
 			Dialog.addString("Subset (optional):", "");
 			Dialog.addCheckbox("Continue previous analysis:", continue_analysis);
@@ -1037,6 +1041,7 @@ function getMaxFilteredIntensity(image){
 /* Process the direction-filtered kymograms to extract individual traces in the forms of skeletons for the purpose of speed and lifetime quantification. */
 function extractKymogramTraces(filtered_image){
 	open(filtered_image);
+	kymogram_image_name = File.nameWithoutExtension();
 	bit_depth = bitDepth();
 	run("Scale...", "x=1.0 y=" + time_stretch + ".0 z=1.0 depth=2 interpolation=None average create");
 	threshold_min = max_filtered_intensity/2.5;
@@ -1048,6 +1053,8 @@ function extractKymogramTraces(filtered_image){
 	run("Skeletonize");
 	makeRectangle(width, height*time_stretch, width, height*time_stretch);
 	run("Crop");
+	Image.removeScale;
+	saveAs("TIFF", dir_kymograms_image_filtered + kymogram_image_name + "-traces");
 	run("Analyze Skeleton (2D/3D)", "prune=none show");
 	close("Results");
 	Table.rename("Branch information", "Results");

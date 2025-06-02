@@ -208,7 +208,7 @@ Added function for displaying kymograms after they are made (they are not made c
  -> analysis of average speeds (all traces)
  -> implemented analysis of average lifetimes (traces that either start and finish within the kymogram or span the whole kymogram)
 
-**Commmit message**
+**commmit message**
 "Implemented analysis of average speeds and lifetimes, and output of results into a csv file. ROIs can now be manually defined using the macro. Big overhaul of function structure and order. Updated comments and help messages. See changelog for details."
 
 
@@ -250,11 +250,11 @@ v0.2.2.1 commited
  -> total fraction of traces overlap, i.e., how much of the signal of the current channel coincides/colocalizes with signal from the other specified channel
  Certain things are calculated multiple times (like the overlap images), but it works
  
-** v0.2.3 Commmit message**
-"Added options to: choose tangential/transveral image type; display calculated movement traces; display mirection-filtered merge images in greyscale. Implemented calculation of signal coincidence/colocalization (called coupling in the code at the moment) and respective quantififications. See changelog for details."
+** v0.2.3 Commmit message **
+"Added options to: choose tangential/transveral image type; display calculated movement traces; display direction-filtered merge images in greyscale. Implemented calculation of signal coincidence/colocalization (called coupling in the code at the moment) and respective quantififications. See changelog for details."
 
 
-23. 5. 2023
+23. 5. 2025
 **general**
 - updated help messages; minor tweaks might still be required
 
@@ -263,7 +263,35 @@ v0.2.2.1 commited
 - added calculateion of mean speed and lifetime of coupled traces
 - in the Results table:
  -> changes the column titles to make them shorter
- -> added list of abbreaviations
+ -> added list of abbreviations
+
+
+26. 5. 2025
+**Analyze kymograms**
+- fixed channel handling for when only one channel is available, or only one channel is to be analyzed
+- fixed issue with always resuming analysis when temp files and processed files list available
+
+
+30. 5. 2025
+**Filter kymograms**
+- added functionality to create a mask made from filtered, thresholded and combined direction-filtered (forward and backward) kymograms; this is used in the analysis section to calculate the fraction of protein that is mobile
+
+**Analyze kymograms**
+- Separated the printing of column names into a separate function. This was required for proper output of conditional parameters quantified only if multiple channels are available and selected by the user (coupling/colocalization of signal)
+- Implemented quantification of mobile protein fraction, based on thresholded direction-filtered kymograms.
+- Removed quantification of CV and autocorrelation. The numbers obtained are not useful, as the noise dominates in these. In addition, they are not very straightforward to interpret.
+- Reorganized the code structure to reflect these changes.
+
+
+2. 6. 2025
+**Filter kymograms**
+- fixed issues with calculating direction-filtered images and mobile fraction masks - mostly relevant for borderline cases such as when ROIs are drawn in the background. This is potentially valid also for ROIs within the cytosol when the signal is weak
+
+**Analyze kymograms**
+- fixed calculation of mobile fraction
+
+** v0.2.4 Commmit message **
+"Implemented quantification of mobile protein fraction. Removed quantification of CV and related autocorrelation. Fixed issues related to ROIs drawn in low-intensity areas (relative to background). Reorganized the code to reflect these changes. See changelog for details."
 
 -------------------------------------------eof-------------------------------------------
 
@@ -282,4 +310,4 @@ v0.2.2.1 commited
 
 **Analyze kymograms**
 -
-
+-
