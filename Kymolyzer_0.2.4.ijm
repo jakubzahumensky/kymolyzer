@@ -1,4 +1,4 @@
-/****************************************************************************************************************************************************
+/***************************************************************************************************************************************
  * BASIC MACRO INFORMATION
  *
  * title: "Kymolyzer"
@@ -11,15 +11,17 @@
  * - citation: https://doi.org/10.1093/biomethods/bpae075
  *
  * Summary:
- * This macro takes microscopy time-series corrected for drift and/or bleaching calculates kymograms and analyzes them.
- * The analysis includes fitlering of main directions and calculation of several quantification parameters, such as speed of particles,
- * variation of signal etc. The calculation of kymograms requires ROIs. These can be prepared either autiomatically, using the approach
- * described in https://doi.org/10.1093/biomethods/bpae075, or manually using the procided option in this macro.
- *
- ****************************************************************************************************************************************************/
+ *  This macro takes microscopy time-series corrected for drift and/or bleaching calculates kymograms and analyzes them.
+ *  The analysis includes fitlering of main directions and calculation of several quantification parameters, such as speed of particles,
+ *  variation of signal etc. The calculation of kymograms requires ROIs. These can be prepared either autiomatically, using the approach
+ *  described in https://doi.org/10.1093/biomethods/bpae075, or manually using the procided option in this macro.
+ ***************************************************************************************************************************************/
 
 macro_name = "Kymolyzer";
 version = "0.2.4";
+publication = "Zahumensky & Malinsky, 2024; doi: 10.1093/biomethods/bpae075";
+GitHub_microscopy_analysis = "https://github.com/jakubzahumensky/microscopy_analysis";
+GitHub_kymolyzer = "https://github.com/jakubzahumensky/kymolyzer";
 
 /* For testing, uncomment the "test = true;" line (i.e., delete the "//").
  * -> batch mode does not start, so all intermediary images are shown
@@ -32,9 +34,6 @@ if (test == false)
 	setBatchMode(true);
 
 /* definitions of constants used in the macro below */
-publication = "Zahumensky & Malinsky, 2024; doi: 10.1093/biomethods/bpae075";
-GitHub_microscopy_analysis = "https://github.com/jakubzahumensky/microscopy_analysis";
-GitHub_kymolyzer = "https://github.com/jakubzahumensky/kymolyzer";
 extension_list = newArray("czi", "oif", "lif", "tif", "vsi"); // only files with these extensions will be processed, add your favourite one if it's missing
 process_choices = newArray("Draw ROIs", "Create kymograms", "Display kymograms", "Filter kymograms", "Analyze kymograms", "EXIT");
 filters = newArray("forward", "backward", "static");
@@ -47,12 +46,10 @@ LUTs_filtered = newArray("Magenta", "Cyan", "Yellow");
 image_types = newArray("transversal", "tangential");
 boolean = newArray("yes", "no");
 
-dir_kymogram_source_data = "data-processed";
+dir_kymogram_source_data = "data";
 initial_folder = "";
-//initial_folder = "D:/Yeast/EXPERIMENTAL/microscopy/JZ-M-072-241002 - PM transporter localization and kinetics - CzBI (Olga)/250411 - Nha1, Trk1 - exp - Zeiss - confo, Airy/";
-//initial_folder = "D:/Yeast/EXPERIMENTAL/macros/JZ-IJ-004 - Kymolyzer/test_images/JZ-M-072/250601/";
-//default_naming_scheme = "strain,medium,time,condition,frame";
-default_naming_scheme = "strain,colony,imaging,experiment,laser,frame";
+default_naming_scheme = "strain,medium,time,condition,frame";
+//default_naming_scheme = "strain,colony,imaging,experiment,laser,frame";
 
 //LUTs_string = "Magenta, Cyan";
 LUTs_string = "Magenta, Green";
@@ -74,6 +71,7 @@ var channels_to_analyze = newArray();
 var channels = newArray();
 var channel_sum = 0;
 var current_channel = "";
+var frame_interval_global = 0;
 
 var image_width = 0;
 var image_height = 0;
@@ -94,7 +92,7 @@ var analyze_overlap = false;
 var just_started = true;
 var continue_analysis = false;
 var column_names_printed = newArray(0, 0, 0, 0, 0);
-var background = newArray();
+var background = 0;
 
 
 /****************************************************************************************************************************************************/
@@ -113,8 +111,8 @@ initialDialogWindow(initial_folder);
 function initialDialogWindow(specified_folder){
 	closeAllWindows();
 	help_message = "<html>"
-		+ "<center><b>Kymolyzer, version " + version + "</b></center>"
-		+ "<center><i>source:" + GitHub_kymolyzer + "</i></center><br>"
+		+ "<center><b>" + macro_name + " " + version + "</b></center>"
+		+ "<center><i>source: " + GitHub_kymolyzer + "</i></center><br>"
 
 		+ "It is strongly recommended that the raw images are corrected for drift and bleaching before defining regions of interest (ROIs), "
 		+ "for example using the <i>Correct and project.ijm</i> [2] macro, which also provides an option for different types of Z projections. "
@@ -176,8 +174,7 @@ function initialDialogWindow(specified_folder){
 		Dialog.addString("Channels:", channels_string, 5);
 		Dialog.addString("Channel display:", LUTs_string, 15);
 		Dialog.addChoice("Select an operation:", process_choices, process_choices[process_ID + 1]);
-//		Dialog.addChoice("Select an operation:", process_choices, process_choices[4]);
-		Dialog.setLocation(screenWidth*2.2/3, screenHeight/9.5);
+//		Dialog.addChoice("Select an operation:", process_choices, process_choices[2]);
 		Dialog.addHelp(help_message);
 		Dialog.show();
 		specified_folder = fixFolderInput(Dialog.getString());
@@ -254,17 +251,17 @@ function processFile(process, i){
 		setBatchMode(false);
 		drawROIs();
 		setBatchMode(true);
-	} else if (matches(process, process_choices[1])){	 /* "Create kymograms" */
+	} else if (matches(process, process_choices[1])){	/* "Create kymograms" */
 		createKymograms();
-	} else if (matches(process, process_choices[2])){	 /* "Display kymograms" */
+	} else if (matches(process, process_choices[2])){	/* "Display kymograms" */
 		setBatchMode(false);
 		i = displayKymograms(i);
 		setBatchMode(true);
-	} else if (matches(process, process_choices[3])){	 /* "Filter kymograms" */
+	} else if (matches(process, process_choices[3])){	/* "Filter kymograms" */
 		filterKymograms();
-	} else if (matches(process, process_choices[4])){	 /* "Analyze kymograms" */
+	} else if (matches(process, process_choices[4])){	/* "Analyze kymograms" */
 		startAnalysis();
-	} else {											  /* "EXIT" */
+	} else {											/* "EXIT" */
 		closeAllWindows();
 		exit();
 	}
@@ -281,6 +278,7 @@ function processFile(process, i){
 function drawROIs(){
 	clean_title = prepareImage();
 	prepareROIs(clean_title);
+	run("Maximize");
 	setTool("ellipse");
 	waitForUser("Make ROIs by drawing them and pressing 't' (or press the 'Add [t]' a button in the ROI manager) after each to add them to the ROI Manager.\n"
 		+ "The ellipse tool is preselected, but any type of ROI is possible");
@@ -310,7 +308,7 @@ function createKymograms(){
 		last_ROI = last_ROI_test;
 	for (j = 0; j < last_ROI; j++){
 		showProgress(-j/last_ROI);
-		selectWindow(title);
+		selectWindow(clean_title);
 		roiManager("Select", j);
 		if (selectionType < 5 || selectionType == 9)
 			run("Area to Line");
@@ -322,7 +320,7 @@ function createKymograms(){
 		saveAs("TIFF", kymogram_path);
 		close();
 	}
-	close(title);
+	close(clean_title);
 }
 
 
@@ -365,11 +363,12 @@ function displayKymograms(k){
 	excluded_string = findExcluded(kymogram_path);
 	display_type = "regular";
 	time_stretch = 1;
+	combined_display = "no";
 	grayscale_boolean = "no";
 
 	while (display_next == this_img){
 		help_message = "<html>"
-			+ "Available kymograms are displayed alongside the original image that shows the defined ROIs. <br><br>"
+			+ "Selected kymograms are displayed alongside the original image that shows the defined ROIs. <br><br>"
 
 			+ "<b>Image</b><br>"
 			+ "Select image for which you desire to display kymograms. <br><br>"
@@ -383,6 +382,9 @@ function displayKymograms(k){
 			+ "If direction-filtered and prominent traces have been calculated, they can be displayed as well. "
 			+ "In this case, the regular ones are displayed in the top of the screen, followed by the selected type. "
 			+ "This makes it easier to correlate everything together. <br><br>"
+			
+			+ "<b>Combined display</b><br>"
+			+ "Select if you want to display regular kymograms together with the selected filtered/traces version. <br><br>"
 
 			+ "<b>Grayscale</b><br>"
 			+ "Select if you want to display the kymograms in colours or greyscale. "
@@ -404,17 +406,19 @@ function displayKymograms(k){
 			Dialog.addChoice("Image:", list_plus, this_img);
 			Dialog.addString("Kymograms:", kymogram_IDs_string);
 			Dialog.addChoice("Kymogram type:", display_options, display_type);
+			Dialog.addChoice("Combined display:", boolean, combined_display);
 			Dialog.addChoice("Greyscale:", boolean, grayscale_boolean);
 			Dialog.addNumber("Stretch in time:", time_stretch);
 			Dialog.addMessage("Currently excluded kymograms:" + excluded_string);
 			Dialog.addString("Exclude kymograms:", "");
 			Dialog.addString("Restore kymograms:", "");
-			Dialog.setLocation(screenWidth*2.2/3, screenHeight*5.5/9);
+			Dialog.setLocation(0, screenHeight*5.5/9);
 			Dialog.addHelp(help_message);
 			Dialog.show();
 			display_next = Dialog.getChoice();
 			kymogram_IDs_string = Dialog.getString();
 			display_type = Dialog.getChoice();
+			combined_display = Dialog.getChoice();
 			grayscale_boolean = Dialog.getChoice();
 			time_stretch = Dialog.getNumber();
 			kymograms_to_exclude = sortIDs(Dialog.getString());
@@ -439,22 +443,27 @@ function displayKymograms(k){
 		excluded_string = findExcluded(dir_kymograms_image_raw);
 		excluded_array = sortIDs(excluded_string);
 		offset = screenHeight/9;
-
-		for (c = 0; c < channels.length; c++){
+		
+		// display regular kymograms regardless of selected option
+		// This way, these are displayed either alone or together with the direction-filtered one or respective isolated traces
+		if (display_type == "regular" || combined_display == "yes"){
+			for (c = 0; c < channels.length; c++){
 				offset = showKymograms(kymogram_path, suffix, offset, channels[c], grayscale);
+			}
 		}
+		// display direction-filtered kymograms or traces based on user input
 		if (contains(fourier_filters, display_type) || contains(traces_images, display_type)){
 			suffix = replace(replace(display_type, "FILTERED", ""), "TRACES", "") + suffix;
 			if (contains(traces_images, display_type)){
 				suffix = replace(suffix, ".tif", "-traces.tif");
 				time_stretch = time_stretch/20;
 			}
-			// identidy folders that contain direction-fitlered images
+			// identify folders that contain direction-filtered images
 			filtered_folders = newArray();
 			kymofolders = getFileList(dir_kymograms_image);
 			for (j = 0; j < kymofolders.length; j++){
 				if (startsWith(kymofolders[j], "filtered"))
-					filtered_folders = Array.concat(filtered_folders, kymofolders[j]);
+					filtered_folders[j] = kymofolders[j];
 			}
 			// cycling through available channels
 			for (c = 0; c < filtered_folders.length; c++){
@@ -728,7 +737,7 @@ function findMainDirections(kymogram_image_name){
 	crop_factor = 3;
 	setForegroundColor(0, 0, 0);
 	setBackgroundColor(0, 0, 0);
-	run("Gaussian Blur...", "sigma=1");
+	run("Gaussian Blur...", "sigma=2");
 	extendBorders();
 	run("16-bit");
 	for (k = 0; k < filters.length; k++){
@@ -794,7 +803,7 @@ function extractKymogramTraces(kymogram_image_name){
 	selectWindow(kymogram_image_name);
 	bit_depth = bitDepth();
 	threshold_min = max_filtered_intensity/3;
-	if (ROI_mean < background[0])
+	if (ROI_mean < background)
 		threshold_min = pow(2, bit_depth) - 1;
 	threshold_max = pow(2, bit_depth) - 1;
 	time_stretch = 20;
@@ -858,7 +867,7 @@ function extractMobilityMasks(kymogram_ID){
 	selectWindow(kymogram_ID);
 	bit_depth = bitDepth();
 	threshold_min = max_filtered_intensity/3;
-	if (ROI_mean < background[0])
+	if (ROI_mean < background)
 		threshold_min = pow(2, bit_depth) - 1;
 	threshold_max = pow(2, bit_depth) - 1;
 	for (k = 0; k < 2; k++){
@@ -1011,7 +1020,7 @@ function printResultsHeader(){
 function analyzeKymograms(res_file, proc_file){
 	clean_title = prepareImage();
 	prepareKymogramDirs(clean_title);
-	background = measureImageBackground(title);
+	background = measureImageBackground(clean_title);
 	kymogram_list = getFileList(dir_kymograms_image_raw);
 	// write out the name of an image if there are no kymograms defined for it and escape the function
 	if (findKymograms(dir_kymograms_image, 0, ".tif") == 0){
@@ -1055,13 +1064,13 @@ function analyzeKymograms(res_file, proc_file){
  */
 function prepareImage(){
 	open(file);
+	img_title = File.nameWithoutExtension;
+	img_title_clean = cleanTitle(img_title);
+	rename(img_title_clean);
 	getPixelSize(unit, pixelWidth, pixelHeight);
 	getDimensions(image_width, image_height, image_channels, image_slices, image_frames);
-	frame_interval = Stack.getFrameInterval();
+	FrameInterval();
 	setLocation(0, 0, screenWidth/3, screenWidth/3);
-	img_title = File.nameWithoutExtension;
-	rename(img_title);
-	img_title_clean = cleanTitle(img_title);
 	setLUTs(true);
 	return img_title_clean;
 }
@@ -1070,11 +1079,34 @@ function prepareImage(){
  * This makes handling of ROIs easier.
  */
 function cleanTitle(string){
-	suffixes = newArray("-AVG", "-SUM", "-MAX", "-MIN", "-processed", "-corr");
+	suffixes = newArray("-AVG", "-SUM", "-MAX", "-MIN", "-processed", "-corr", "-crop", "-cropped");
 	for (i = 0; i < suffixes.length; i++){
 		string = replace(string, suffixes[i], "");
 	}
 	return string;
+}
+
+function FrameInterval(){
+	frame_interval = Stack.getFrameInterval();
+	if (frame_interval == 0){
+		if (frame_interval_global != 0){
+			interval = frame_interval_global;
+		} else {
+			Dialog.create("Set frame interval");
+			Dialog.addMessage("Frame interval for:");
+			Dialog.addMessage(img_title);
+			Dialog.addMessage("not detected, input manually:");
+			Dialog.addNumber("Frame interval (in seconds)", "");
+			Dialog.addChoice("Apply to:", newArray("for current image", "for all images"));
+			Dialog.show();
+			interval = Dialog.getNumber();
+			frame_interval_extent = Dialog.getChoice();
+			if (frame_interval_extent == "for all images")
+				frame_interval_global = interval;
+		}
+		Stack.setFrameInterval(interval);
+		saveAs("TIFF", file);
+	}
 }
 
 /* Set LUTs for individual channels based on user input inthe initial Dialog window. */
@@ -1128,7 +1160,7 @@ function measureImageBackground(image_title){
 	getStatistics(area, image_background_mean, min, max, image_background_std, histogram);
 	close("DUP*");
 	close("Result*");
-	return newArray(image_background_mean, image_background_std);
+	return image_background_mean;
 }
 
 /* Write out (into Log) file names of images/files that do not have the specified objects assigned to them:
@@ -1156,17 +1188,17 @@ function contains(array, value){
 
 function printColumnNames(){
 	column_names = "exp_code,BR_date,"
-		+ naming_scheme + ",background_mean,background_SD,frame_interval,cell_no"
+		+ naming_scheme + ",background_mean,frame_interval[s],cell_no"
 		+ ",traces_fwd,traces_bwd,traces_stat"
 		+ ",v_fwd[nm/s],v_bwd[nm/s],v_stat[nm/s]"
 		+ ",T_fwd[s],T_bwd[s],T_stat[s]"
 		+ ",mean_v[nm/s],mean_T[s]"
-		+ ",mobile_fraction[%]";
+		+ ",mobile_fraction_percent";
 	if (analyze_overlap == true)
 		column_names += ",coupled_traces_fwd,coupled_traces_bwd,coupled_traces_stat"
 			+ ",coupled_v_fwd[nm/s],coupled_v_bwd[nm/s],coupled_v_stat[nm/s]"
 			+ ",coupled_T_fwd[s],coupled_T_bwd[s],coupled_T_stat[s]"
-			+ ",coupled_T_fwd_fraction[%],coupled_T_bwd_fraction[%],coupled_T_stat_fraction[%]"
+			+ ",coupled_fwd_fraction_percent,coupled_bwd_fraction_percent,coupled_stat_fraction_percent"
 			+ ",coupled_mean_v[nm/s],coupled_mean_T[s]";
 	print("[" + temporary_results_file + "]", column_names + "\n");
 }
@@ -1181,11 +1213,11 @@ function calculateMobileFraction(kymogram_ID){
 	run("Create Selection");
 	open(dir_kymograms_image_raw + kymogram_ID + ".tif");
 	run("Measure");
-	total_intensity = getResult("IntDen", 0) - background[0];
+	total_intensity = getResult("IntDen", 0) - background;
 	Stack.setChannel(current_channel);
 	run("Restore Selection");
 	run("Measure");
-	mobile_intensity = getResult("IntDen", 1) - background[0];
+	mobile_intensity = getResult("IntDen", 1) - background;
 	close("Results");
 	fraction = 100*mobile_intensity/total_intensity;
 	// If there is absolutely no mobile signal, the "Create selection" command will select the whole image.
@@ -1216,6 +1248,7 @@ function findTracesOverlap(image_title){
 		for (i = 0; i < dir_filtered_names.length; i++){
 			traces_file = dir_kymograms_image + "filtered-" + dir_filtered_names[i] + "/" + image_title + "-" + filters[k] + "-traces.tif";
 			open(traces_file);
+			run("Dilate");
 			run("Dilate");
 			rename(dir_filtered_names[i]);
 		}
@@ -1291,8 +1324,8 @@ function calculateWeightedMeans(input_array){
 	output_array = newArray(2);
 	corrected_array = replaceInArray(input_array, NaN, 0);
 	traces_count = corrected_array[0] + corrected_array[1] + corrected_array[2];
-	output_array[0] = (corrected_array[0]*corrected_array[3] - corrected_array[1]*corrected_array[4] + corrected_array[2]*corrected_array[5])/traces_count;
-	output_array[1] = (corrected_array[0]*corrected_array[6] - corrected_array[1]*corrected_array[7] + corrected_array[2]*corrected_array[8])/traces_count;
+	output_array[0] = (abs(corrected_array[0]*corrected_array[3]) + abs(corrected_array[1]*corrected_array[4]) + abs(corrected_array[2]*corrected_array[5]))/traces_count;
+	output_array[1] = (corrected_array[0]*corrected_array[6] + corrected_array[1]*corrected_array[7] + corrected_array[2]*corrected_array[8])/traces_count;
 	return output_array;
 }
 
@@ -1333,14 +1366,14 @@ function calculateCouplingRatios(image_title){
 function printResults(){
 	parents = findParentDirs(); // [0] - experiment code, [1] - biological replicate date
 	kymogram_results = parents[0] + "," + parents[1] // [0] - experiment code, [1] - biological replicate date
-		+ "," + replace(title," ","_") + "," + arrayToString(background) + "," + frame_interval + "," + (j+1) // image title, background intensity and current ROI number
-		+ "," + arrayToString(average_speeds_and_lifetimes)
-		+ "," + arrayToString(mean_speed_and_lifetime) // + "," + mean_speed + "," + mean_lifetime
+		+ "," + replace(title," ","_") + "," + background + "," + frame_interval + "," + (j+1) // image title, background intensity and current ROI number
+		+ "," + String.join(average_speeds_and_lifetimes) // no. of traces, average speeds, average lifetimes (for forward, backward, static movement, respectively)
+		+ "," + String.join(mean_speed_and_lifetime) // + "," + mean_speed + "," + mean_lifetime
 		+ "," + mobile_fraction;
 	if (analyze_overlap == true)
-		kymogram_results += "," + arrayToString(average_speeds_and_lifetimes_coupled)
-			+ "," + arrayToString(coupled_lifetimes_fractions)
-			+ "," + arrayToString(mean_speed_and_lifetime_coupled);
+		kymogram_results += "," + String.join(average_speeds_and_lifetimes_coupled)
+			+ "," + String.join(coupled_lifetimes_fractions)
+			+ "," + String.join(mean_speed_and_lifetime_coupled);
 	print("["+ res_file + "]", kymogram_results + "\n");
 }
 
@@ -1357,17 +1390,6 @@ function findParentDirs(){
 	if (lengthOf(exp_code) > lengthOf(experiment_scheme))
 		exp_code = substring(exp_code, 0, lengthOf(experiment_scheme));
 	return newArray(exp_code, BR_date);
-}
-
-/* Convert and array into a string with "," as delimiter. */
-function arrayToString(array){
-	string = "";
-	for (i = 0; i < array.length; i++){
-		string = string + array [i];
-		if (i < array.length - 1) // no comma at the end of the string
-			string = string + ",";
-	}
-	return string;
 }
 
 /* Save temporary results file and the list of processed files. This enables resuming of an interrupted analysis. */
@@ -1421,6 +1443,7 @@ function wrapUp(){
 		File.delete(dir_master + processed_images_file);
 	}
 	closeAllWindows();
+	waitForUser("Analysis finished!");
 	just_started = true;
 }
 

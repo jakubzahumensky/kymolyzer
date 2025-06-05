@@ -293,6 +293,27 @@ v0.2.2.1 commited
 ** v0.2.4 Commmit message **
 "Implemented quantification of mobile protein fraction. Removed quantification of CV and related autocorrelation. Fixed issues related to ROIs drawn in low-intensity areas (relative to background). Reorganized the code to reflect these changes. See changelog for details."
 
+
+3.-5. 6. 2025
+**general**
+- changed the formatting a bit; changed dialog.window positions
+- removed the arrayToString function, as there is a native one that does this (String.join)
+- unified the use of clean_title variable
+- reverted the reporting of background mean and SD to only reporting mean; SD was not used anywhere
+- added a security measure to verify if the frame interval is set and read from image metadata (currently issue with vsi format); if the frame interval is 0, user is prompted to add the correct value; this is essential, as the value is used to calculate both speeds and lifetimes; the function is evoked every time an image file is accessed; the imput value can be set for the individual image, or for all images in the current run; proceed carefully
+
+**Display kymograms**
+- added option to enable user to choose if they want to display the regular kymograms alongside the direction-filtered ones and traces ("combined display")
+
+**Filter kymograms**
+- changed Gauss radius for blurring from 1 to 2 to get more accurate extraction of traces
+
+**Analyze kymograms**
+- changed the processing folder from "data-processed" to "data"
+- added a pop-up message informing the user that the analysis has finished
+- fixed calculation of mean speeds and lifetimes
+- for calculation of overlaps, "Dilate" function is now called twice instead of once before multiplying the relevant trace images; this provides more accurate and continuous traces
+
 -------------------------------------------eof-------------------------------------------
 
 
