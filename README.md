@@ -14,9 +14,9 @@ The Results table can be processed using our custom [R script](https://github.co
 
 [**Cellpose 2.0**](https://www.cellpose.org/) ([Stringer et al., 2021](https://www.nature.com/articles/s41592-020-01018-x)):
 
--   [Installation instructions](https://github.com/MouseLand/cellpose/blob/main/README.md%3E)
+-   [Installation instructions](https://github.com/MouseLand/cellpose/blob/main/README.md)
 
--   requires [Python](https://www.python.org/downloads/) and [Anaconda](https://www.anaconda.com/download); installation instructions can be found on the [Cellpose Readme website](https://www.cellpose.org/)
+-   requires [Python](https://www.python.org/downloads/) and [Anaconda](https://www.anaconda.com/download); installation instructions can be found on the [Cellpose Readme website](https://github.com/MouseLand/cellpose/blob/main/README.md)
 
 ------------------------------------------------------------------------
 
