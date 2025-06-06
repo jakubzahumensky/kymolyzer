@@ -314,6 +314,12 @@ v0.2.2.1 commited
 - fixed calculation of mean speeds and lifetimes
 - for calculation of overlaps, "Dilate" function is now called twice instead of once before multiplying the relevant trace images; this provides more accurate and continuous traces
 
+
+6. 6. 2025
+**Filter kymograms**
+- fixed ignoring of exluded ROIs/kymograms during filtering
+
+
 -------------------------------------------eof-------------------------------------------
 
 

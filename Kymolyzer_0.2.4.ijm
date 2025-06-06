@@ -701,6 +701,7 @@ function filterKymograms(){
 			if (!File.exists(dir_kymograms_image_filtered))
 				File.makeDirectory(dir_kymograms_image_filtered);
 			num_of_ROIs = prepareROIs(clean_title);
+			ROI_list = getFileList(dir_kymograms_image_raw);
 			for (j = 0; j < num_of_ROIs; j++){
 				showProgress(-j/num_of_ROIs);
 				selectWindow("AVG_" + clean_title);
@@ -708,7 +709,7 @@ function filterKymograms(){
 				roiManager("Select", j);
 				run("Measure");
 				ROI_mean = getResult("Mean", 0);
-				kymogram = dir_kymograms_image_raw + "ROI_" + j + 1 + ".tif";
+				kymogram = dir_kymograms_image_raw + ROI_list[j];
 				if (!endsWith(kymogram, "-excluded.tif")){
 					open(kymogram);
 					kymogram_title = File.nameWithoutExtension();
