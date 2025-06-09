@@ -830,7 +830,7 @@ function extractKymogramTraces(kymogram_image_name){
 
 /* To avoid loss of information during fourier transformations and filtering, the original kymogram image is extended in x and y dimensions, in a kaleidoscopic manner. */
 function extendBorders(){
-	run("Duplicate...", "title=DUP");
+	run("Duplicate...", "title=DUP"); // duplicates only current channel
 	run("Duplicate...", "title=extended");
 	getDimensions(width, height, img_channels, slices, frames);
 	run("Canvas Size...", "width=" + 3*width + " height=" + 3*height + " position=Center");
