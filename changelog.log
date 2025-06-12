@@ -320,6 +320,13 @@ v0.2.2.1 commited
 - fixed ignoring of exluded ROIs/kymograms during filtering
 
 
+12. 6. 2025
+**Display kymograms**
+- fixed a minor issue with excluding kymograms that occurred when tif files were used as raw data, i.e., even before processing
+
+**Analyze kymograms**
+- note: vsi metadata (Olympus image format) are read incompletely by ImageJ; this leads to absence of information on time interval; this can be circumvented by exporting the images to tif in CellSens
+
 -------------------------------------------eof-------------------------------------------
 
 

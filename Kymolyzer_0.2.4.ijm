@@ -426,16 +426,10 @@ function displayKymograms(k){
 		kymogram_IDs = sortIDs(kymogram_IDs_string);
 
 		close("ROI*");
-		if (display_next != this_img)
-			break;
-
-		if (grayscale_boolean == "yes")
-			grayscale = true;
-		else
-			grayscale = false;
 
 		kymogram_path = dir_kymograms_image_raw;
 		suffix = ".tif";
+		
 		if (kymograms_to_exclude.length > 0)
 			excludeKymograms(kymograms_to_exclude, "exclude");
 		if (kymograms_to_include.length > 0)
@@ -443,7 +437,15 @@ function displayKymograms(k){
 		excluded_string = findExcluded(dir_kymograms_image_raw);
 		excluded_array = sortIDs(excluded_string);
 		offset = screenHeight/9;
-		
+
+		if (display_next != this_img)
+			break;
+
+		if (grayscale_boolean == "yes")
+			grayscale = true;
+		else
+			grayscale = false;
+			
 		// display regular kymograms regardless of selected option
 		// This way, these are displayed either alone or together with the direction-filtered one or respective isolated traces
 		if (display_type == "regular" || combined_display == "yes"){
@@ -584,7 +586,7 @@ function excludeKymograms(list, operation){
 	for (i = 0; i < list.length; i++){
 		if (operation == "exclude"){
 			old_name = kymogram_path + "ROI_" + list[i] + ".tif";
-			new_name = replace(old_name, ".tif", "-excluded.tif");
+			new_name = replace(old_name, "ROI_" + list[i] + ".tif", "ROI_" + list[i] + "-excluded.tif");
 		} else if (operation == "include"){
 			old_name = kymogram_path + "ROI_" + list[i] + "-excluded.tif";
 			new_name = replace(old_name, "-excluded", "");
