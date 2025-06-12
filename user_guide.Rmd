@@ -1,0 +1,26 @@
+---
+title: "Kymolyzer User Guide"
+author: "Jakub Zahumensky"
+date: "2025-06-12"
+output: pdf_document
+---
+
+*lorem ipsum hento tamto*
+
+# 1. Draw ROIs
+
+
+# 2. Create kymograms
+
+
+# 3. Display kymograms
+
+
+# 4. Filter kymograms
+
+
+# 5. Analyze kymograms
+
+
+# Process the *Results table*
+
