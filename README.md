@@ -20,12 +20,16 @@ The Results table can be processed using our custom [R script](https://github.co
 
 ------------------------------------------------------------------------
 
-### Copyright
+### Copyright and Non-Liability Disclaimer
 
-The codes and scripts are available under the CC BY-NC licence. The users are free to distribute, remix, adapt, and build upon the material in any medium or format for noncommercial purposes. Attribution to the creator is required.
+The codes are available under the CC BY-NC licence. The users are free to distribute, remix, adapt, and build upon the material in any medium or format for non-commercial purposes. Attribution to the creator is required.
+
+The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
 
 ------------------------------------------------------------------------
 
 ### Citation
 
-**Zahumensky J., Malinsky J. Live cell fluorescence microscopy—an end-to-end workflow for high-throughput image and data analysis**. *Biology Methods and Protocols*, Volume 9, Issue 1, 2024, bpae075; doi: <https://doi.org/10.1093/biomethods/bpae075>
+Zenodo repository: <https://doi.org/10.5281/zenodo.15650134>
+
+Related work: **Zahumensky J., Malinsky J. Live cell fluorescence microscopy—an end-to-end workflow for high-throughput image and data analysis**. *Biology Methods and Protocols*, Volume 9, Issue 1, 2024, bpae075; doi: <https://doi.org/10.1093/biomethods/bpae075>
