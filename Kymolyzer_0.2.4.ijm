@@ -280,7 +280,9 @@ function drawROIs(){
 	prepareROIs(clean_title);
 	run("Maximize");
 	setTool("ellipse");
-	waitForUser("Make ROIs by drawing them and pressing 't' (or press the 'Add [t]' a button in the ROI manager) after each to add them to the ROI Manager.\n"
+	waitForUser("Make ROIs by drawing them and pressing 't'\n"
+		+ "(or press the 'Add [t]' a button in the ROI manager)\n"
+		+ "after each to add them to the ROI Manager.\n"
 		+ "The ellipse tool is preselected, but any type of ROI is possible");
 	roiManager("Remove Channel Info");
 	roiManager("Remove Slice Info");
