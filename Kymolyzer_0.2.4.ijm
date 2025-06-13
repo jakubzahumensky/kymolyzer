@@ -12,9 +12,9 @@
  *
  * Summary:
  *  This macro takes microscopy time-series corrected for drift and/or bleaching calculates kymograms and analyzes them.
- *  The analysis includes fitlering of main directions and calculation of several quantification parameters, such as speed of particles,
- *  variation of signal etc. The calculation of kymograms requires ROIs. These can be prepared either autiomatically, using the approach
- *  described in https://doi.org/10.1093/biomethods/bpae075, or manually using the procided option in this macro.
+ *  The analysis includes filtering of main directions and calculation of several quantification parameters, such as speed of particles,
+ *  variation of signal etc. The calculation of kymograms requires ROIs. These can be prepared either automatically, using the approach
+ *  described in https://doi.org/10.1093/biomethods/bpae075, or manually using the provided option in this macro.
  ***************************************************************************************************************************************/
 
 macro_name = "Kymolyzer";
@@ -116,7 +116,8 @@ function initialDialogWindow(specified_folder){
 
 		+ "It is strongly recommended that the raw images are corrected for drift and bleaching before defining regions of interest (ROIs), "
 		+ "for example using the <i>Correct and project.ijm</i> [2] macro, which also provides an option for different types of Z projections. "
-		+ "Working with maximum intesity projections can be helpful when working with images with low signal. "
+		+ "Working with maximum/summary intensity projections can be helpful when working with images with low signal. "
+		+ "It also facilitates quick assessment of drift correction. "
 		+ "The ROIs can be defined using e.g. Cellpose, as described in [1], or in any other way, but they need to be named and organized as described in [1]. "
 		+ "They can also be defined manually using the <i>Draw ROIs</i> option of this macro, which respects these requirements. <br><br>"
 
@@ -161,7 +162,7 @@ function initialDialogWindow(specified_folder){
 
 		+ "<b>Analyze kymograms</b><br>"
 		+ "Kymograms are quantified. Results are saved in a csv file that can be further processed using <i>R scripts</i> published previously [1, 2]. "
-		+ "For details on the quantified parameters reported in the Results table, consult thededicated pdf file. <br><br>"
+		+ "For details on the quantified parameters reported in the Results table, consult the dedicated pdf file. <br><br>"
 
 		+ "<b>References:</b><br>"
 		+ "[1] " + publication + " <br>"
