@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Kymolyzer
 
 ## Automated analysis of movement in microscopy data - from images to numbers and plots
