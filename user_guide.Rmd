@@ -14,7 +14,7 @@ output:
 -   e-mail: [jakub.zahumensky\@gmail.com](mailto:jakub.zahumensky@gmail.com){.email}
 -   GitHub: <https://github.com/jakubzahumensky/kymolyzer>
 -   Czech Academy of Sciences, Institute of Experimental Medicine
--   Department of Functional Organisation of Biomembranes
+    -   Department of Functional Organisation of Biomembranes
 
 # Summary
 
@@ -58,7 +58,6 @@ Analyze kymograms Kymograms are quantified. Results are saved in a csv table fil
 
 The Results table can be processed using our custom [*R script*](https://github.com/jakubzahumensky/microscopy_analysis/tree/main/processing%20in%20R) developed previously.
 
-
 # Dialog windows
 
 ## Directory
@@ -81,15 +80,11 @@ Specify image channel(s) to be processed. Use comma(s) to specify multiple chann
 
 Specify LUTs (lookup tables) image channel(s) to be used for display of images. The calculated kymograms are saved using these. Note that the LUT names need to correspond with the names used by Fiji.
 
-
-
 # Copyright and Non-Liability Disclaimer
 
 The codes are available under the [CC BY-NC licence](https://creativecommons.org/licenses/by-nc/4.0/). The users are free to distribute, remix, adapt, and build upon the material in any medium or format for non-commercial purposes. Attribution to the creator is required.
 
 The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
-
-
 
 # Citation
 
