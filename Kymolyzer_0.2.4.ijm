@@ -46,10 +46,13 @@ LUTs_filtered = newArray("Magenta", "Cyan", "Yellow");
 image_types = newArray("transversal", "tangential");
 boolean = newArray("yes", "no");
 
+/***************************************************************************************************************************************/
 dir_kymogram_source_data = "data";
 initial_folder = "";
+initial_folder = "D:/Yeast/EXPERIMENTAL/microscopy/OZ-M-250623 - kymogram test/250623/";
 default_naming_scheme = "strain,medium,time,condition,frame";
 //default_naming_scheme = "strain,colony,imaging,experiment,laser,frame";
+/***************************************************************************************************************************************/
 
 //LUTs_string = "Magenta, Cyan";
 LUTs_string = "Magenta, Green";
@@ -692,7 +695,7 @@ function getArrayIndex(array, value){
 function filterKymograms(){
 	for (c = 1; c <= 3; c++){
 		current_channel = c;
-		if (contains(channels, current_channel)){
+		if (contains(channels, current_channel) && (current_channel <= image_channels)){
 			clean_title = prepareImage();
 			background = measureImageBackground(clean_title);
 			selectWindow(clean_title);
@@ -740,7 +743,8 @@ function filterKymograms(){
  * For more information on this filtering, see Mangeol et al., 2016; doi: doi/10.1091/mbc.E15-06-0404. The following functions are based on their KymographClear macro.
  */
 function findMainDirections(kymogram_image_name){
-	crop_factor = 3;
+//	crop_factor = 3;
+	crop_factor = 1;
 	setForegroundColor(0, 0, 0);
 	setBackgroundColor(0, 0, 0);
 	run("Gaussian Blur...", "sigma=2");
@@ -883,7 +887,9 @@ function extractMobilityMasks(kymogram_ID){
 		run("Create Mask");
 		close(title);
 	}
-	run("Images to Stack", "use");
+
+	run("Images to Stack", "  title=mask use");
+
 	run("Z Project...", "projection=[Max Intensity]");
 	run("16-bit");
 	saveAs("TIFF", dir_kymograms_image_filtered + kymogram_ID + "-mask");

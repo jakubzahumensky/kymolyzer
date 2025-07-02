@@ -327,6 +327,11 @@ v0.2.2.1 commited
 **Analyze kymograms**
 - note: vsi metadata (Olympus image format) are read incompletely by ImageJ; this leads to absence of information on time interval; this can be circumvented by exporting the images to tif in CellSens
 
+
+2. 7. 2025
+**Filter kymograms**
+- fixed handling of single-channel images (channel selection + images-to-stack issue)
+
 -------------------------------------------eof-------------------------------------------
 
 
