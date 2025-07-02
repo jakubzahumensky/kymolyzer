@@ -49,7 +49,6 @@ boolean = newArray("yes", "no");
 /***************************************************************************************************************************************/
 dir_kymogram_source_data = "data";
 initial_folder = "";
-initial_folder = "D:/Yeast/EXPERIMENTAL/microscopy/OZ-M-250623 - kymogram test/250623/";
 default_naming_scheme = "strain,medium,time,condition,frame";
 //default_naming_scheme = "strain,colony,imaging,experiment,laser,frame";
 /***************************************************************************************************************************************/
@@ -747,8 +746,7 @@ function filterKymograms(){
  * For more information on this filtering, see Mangeol et al., 2016; doi: doi/10.1091/mbc.E15-06-0404. The following functions are based on their KymographClear macro.
  */
 function findMainDirections(kymogram_image_name){
-//	crop_factor = 3;
-	crop_factor = 1;
+	crop_factor = 3;
 	setForegroundColor(0, 0, 0);
 	setBackgroundColor(0, 0, 0);
 	run("Gaussian Blur...", "sigma=2");
