@@ -332,6 +332,9 @@ v0.2.2.1 commited
 **Filter kymograms**
 - fixed handling of single-channel images (channel selection + images-to-stack issue)
 
+**Draw ROIs**
+- fixed behaviour when no ROIs are drawn to avoid macro crash
+
 -------------------------------------------eof-------------------------------------------
 
 
