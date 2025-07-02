@@ -1,5 +1,4 @@
 # Kymolyzer
-
 ## Automated analysis of movement in microscopy data - from images to numbers and plots
 
 This repository contains a custom **Fiji (ImageJ)** macro developed for automatic analysis of movement in microscopy images. The macro creates [kymograms (also called kymographs)](https://imagej.net/tutorials/generate-and-exploit-kymographs), filters them into main directions (forward, backward, static; approach based on [Mangeol et al., 2016](https://doi.org/10.1091/mbc.e15-06-0404)) and quantifies the numbers of moving foci, their speeds in different directions, and their lifetimes. For multichannel images, the macro also analyzes the coupling (colocalization) moving signal in the two channels and quantifies it.
@@ -10,7 +9,7 @@ The Results table can be processed using our custom [R script](https://github.co
 
 ------------------------------------------------------------------------
 
-### Segmentation of cells/objects:
+## Segmentation of cells/objects:
 
 [**Cellpose 2.0**](https://www.cellpose.org/) ([Stringer et al., 2021](https://www.nature.com/articles/s41592-020-01018-x)):
 
@@ -20,15 +19,17 @@ The Results table can be processed using our custom [R script](https://github.co
 
 ------------------------------------------------------------------------
 
-### Copyright and Non-Liability Disclaimer
+## Copyright
 
 The codes are available under the CC BY-NC licence. The users are free to distribute, remix, adapt, and build upon the material in any medium or format for non-commercial purposes. Attribution to the creator is required.
+
+## Non-Liability Disclaimer
 
 The software is provided “as is”, without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
 
 ------------------------------------------------------------------------
 
-### Citation
+## Citation
 
 Zenodo repository: <https://doi.org/10.5281/zenodo.15650134>
 
