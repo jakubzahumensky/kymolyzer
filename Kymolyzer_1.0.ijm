@@ -18,7 +18,7 @@
  ***************************************************************************************************************************************/
 
 macro_name = "Kymolyzer";
-version = "0.2.4";
+version = "1.0";
 publication = "Zahumensky & Malinsky, 2024; doi: 10.1093/biomethods/bpae075";
 GitHub_microscopy_analysis = "https://github.com/jakubzahumensky/microscopy_analysis";
 GitHub_kymolyzer = "https://github.com/jakubzahumensky/kymolyzer";
