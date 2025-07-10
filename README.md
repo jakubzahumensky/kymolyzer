@@ -29,6 +29,12 @@ The software is provided “as is”, without warranty of any kind, express or i
 
 ---
 
+## Acknowledgement
+
+Development of this software was supported by the MEYS CR (LM2023050 Czech-BioImaging).
+
+---
+
 ## Citation
 
 Zenodo repository: <https://doi.org/10.5281/zenodo.15650134>
