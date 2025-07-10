@@ -42,6 +42,8 @@ The calculation of kymograms requires ROIs. These can be prepared either automat
 
 Create kymograms Create kymograms from defined ROIs. Error is displayed if no ROIs are defined.
 
+*Note: direct import of kymograms created externally is currently not supported*
+
 ## 3. Display kymograms
 
 Display kymograms Images in the specified folder are displayed one-by-one, together with kymograms for each cell (defined ROI). If direction-filtered images of kymograms and individual traces have been already calculated, they can be displayed as well. In this case, the regular kymograms are displayed as well, to facilitate comparison.

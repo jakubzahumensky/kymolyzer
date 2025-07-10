@@ -4,7 +4,7 @@
 -   e-mail: <jakub.zahumensky@gmail.com>
 -   GitHub: <https://github.com/jakubzahumensky/kymolyzer>
 -   Czech Academy of Sciences, Institute of Experimental Medicine
--   Department of Functional Organisation of Biomembranes
+    -   Department of Functional Organisation of Biomembranes
 
 # Summary
 
@@ -55,6 +55,9 @@ respects these requirements.
 
 Create kymograms Create kymograms from defined ROIs. Error is displayed
 if no ROIs are defined.
+
+*Note: direct import of kymograms created externally is currently not
+supported*
 
 ## 3. Display kymograms
 
