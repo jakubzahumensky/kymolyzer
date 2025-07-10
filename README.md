@@ -37,7 +37,7 @@ Development of this software was supported by the MEYS CR (LM2023050 Czech-BioIm
 
 ## Citation
 
-Zenodo repository: <https://doi.org/10.5281/zenodo.15650134>
+If you use Kymolyzer in your research, please cite the Zenodo DOI: [10.5281/zenodo.15853597](https://doi.org/10.5281/zenodo.15853597)
 
 Related work:\
 **Jakub Zahumensky & Jan Malinsky: Live cell fluorescence microscopy—an end-to-end workflow for high-throughput image and data analysis**\
