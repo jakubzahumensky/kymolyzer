@@ -3,8 +3,11 @@ cache/
 cache
 test_images/
 test_set/
+press_releases/
 
 *.tif
 *.czi
 
 user_guide.Rmd
+user_guide.Rmd
+
