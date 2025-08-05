@@ -1,4 +1,7 @@
-# Kymolyzer
+<p align="center">
+  <img src="https://github.com/jakubzahumensky/kymolyzer/blob/main/graphics/kymolyzer_logo.png?raw=true" width="500" class="center">
+</p>
+
 ## Automated analysis of movement in microscopy data - from images to numbers and plots
 
 This repository contains a custom **Fiji (ImageJ)** macro developed for automatic analysis of movement in microscopy images. The macro creates [kymograms (also called kymographs)](https://imagej.net/tutorials/generate-and-exploit-kymographs), filters them into main directions (forward, backward, static; approach based on [Mangeol et al., 2016](https://doi.org/10.1091/mbc.e15-06-0404)) and quantifies the numbers of moving foci, their speeds in different directions, and their lifetimes. For multichannel images, the macro also analyzes the coupling (colocalization) moving signal in the two channels and quantifies it.
