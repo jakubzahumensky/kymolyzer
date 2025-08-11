@@ -283,10 +283,12 @@ function drawROIs(){
 	prepareROIs(clean_title);
 	run("Maximize");
 	setTool("ellipse");
-	message = "Make ROIs by drawing them and pressing 't'\n"
+	message = "[Keep this window open]]\n"
+		+ "Make ROIs by drawing them and pressing 't'\n"
 		+ "(or press the 'Add [t]' a button in the ROI manager)\n"
 		+ "after each to add them to the ROI Manager.\n"
-		+ "The ellipse tool is preselected, but any type of ROI is possible";
+		+ "The ellipse tool is preselected, but any type of ROI is possible.\n"
+		+ "Press [OK] once all ROIs are defined.";
 	waitForUser(message);
 	while (roiManager("count") == 0){
 		waitForUser(message);
@@ -1077,13 +1079,15 @@ function analyzeKymograms(res_file, proc_file){
  * This should result in the core file name, as it was originally saved after imaging.
  */
 function prepareImage(){
-	open(file);
+	run("Bio-Formats (Windowless)", "open=[" + file + "]");
 	img_title = File.nameWithoutExtension;
 	img_title_clean = cleanTitle(img_title);
 	rename(img_title_clean);
 	getPixelSize(unit, pixelWidth, pixelHeight);
 	getDimensions(image_width, image_height, image_channels, image_slices, image_frames);
 	FrameInterval();
+	if (image_channels > 1)
+		Stack.setDisplayMode("composite");
 	setLocation(0, 0, screenWidth/3, screenWidth/3);
 	setLUTs(true);
 	return img_title_clean;
@@ -1435,7 +1439,11 @@ function cleanUp(){
 			waitForUser("One or more images do not have calculated kymograms, see the Log. Create kymograms for these images and run the macro again.");
 		}
 	}
-	if (matches(process, process_choices[4])) /* "Analyze kymograms" */
+	if (matches(process, process_choices[1])) /* "Create kymograms" */
+		waitForUser("Kymograms created successfully and can now be displayed.");
+	else if (matches(process, process_choices[3])) /* "Filter kymograms" */
+		waitForUser("Kymograms filtered successfully. The resulting images can now be displayed.");
+	else if (matches(process, process_choices[4])) /* "Analyze kymograms" */
 		wrapUp();
 	images_without_kymograms_array = newArray();
 }
