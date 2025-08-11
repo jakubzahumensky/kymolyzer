@@ -1,8 +1,13 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # **The *Results table***
 
 The *Kymolyzer* macro outputs a single comma-separated values (CSV) table containing data from all analyzed cells across all experiments. The table begins with a header followed by rows of quantitative results for each individual cell (ROI), organized into clearly labeled columns. Each column is explained below.
 
-------------------------------------------------------------------------
+---
 
 ## **Table header**
 
@@ -20,13 +25,13 @@ Each line of the header starts with a pound sign (`#`) and is automatically igno
     -   *T* – lifetime
     -   *v* – speed
 
-------------------------------------------------------------------------
+---
 
 ## **Column definitions**
 
 Each row corresponds to a single analyzed cell (ROI) and contains the following parameters, grouped by origin:
 
-------------------------------------------------------------------------
+---
 
 ### **From folder structure**
 
@@ -35,7 +40,7 @@ Each row corresponds to a single analyzed cell (ROI) and contains the following 
 
 *for details on data structure consult Fig. 6 in [Zahumensky & Malinsky, 2024](https://doi.org/10.1093/biomethods/bpae075)*
 
-------------------------------------------------------------------------
+---
 
 ### **From file name**
 
@@ -47,7 +52,7 @@ These labels are defined by the user via the *Naming scheme* input in the *Kymol
 -   **condition** – treatment condition (e.g., control, heat shock, drug)
 -   **frame** – frame identifier (e.g., different images from the same sample)
 
-------------------------------------------------------------------------
+---
 
 ### **From image analysis**
 
@@ -55,7 +60,7 @@ These labels are defined by the user via the *Naming scheme* input in the *Kymol
 -   **frame_interval** – time between consecutive frames (in seconds); extracted from metadata or entered manually if missing — *ensure accuracy for correct speed/lifetime quantification!*
 -   **cell_no** – ROI identifier, matching the number shown in Fiji's ROI Manager
 
-------------------------------------------------------------------------
+---
 
 ### **Quantified dynamics (by direction)**
 
@@ -68,7 +73,7 @@ These labels are defined by the user via the *Naming scheme* input in the *Kymol
 
 *note that only traces that both start and end within the kymogram, or span it entirely, are taken into account during quantification*
 
-------------------------------------------------------------------------
+---
 
 ### **Coupled signal analysis (based on colocalization with second channel)**
 
