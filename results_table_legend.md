@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 # **The *Results table***
 
 The *Kymolyzer* macro outputs a single comma-separated values (CSV) table containing data from all analyzed cells across all experiments. The table begins with a header followed by rows of quantitative results for each individual cell (ROI), organized into clearly labeled columns. Each column is explained below.
